@@ -1831,9 +1831,9 @@ function createMainGUI()
     createButton("🔧 OPEN COMPONENT GUI", function() createComponentBoxGUI() end, Colors.Component)
 
     -- Premium
-    createCategory("⭐ PREMIUM (Free)")
+    createCategory("⭐ Illicit (Free)")
     premiumStatus = createLabel("Status: Ready")
-    createButton("🚀 LOAD PREMIUM", function()
+    createButton("🚀 LOAD Illicit", function()
         premiumStatus.Text = "Loading..."
         pcall(function() loadstring(game:HttpGet('https://gist.githubusercontent.com/iltmita/45481282af67a27734ca6d53c72b4bac/raw'))() end)
         premiumStatus.Text = "Loaded!"
@@ -1841,10 +1841,10 @@ function createMainGUI()
 
     -- Discord
     createCategory("💬 COMMUNITY")
-    createButton("📋 COPY DISCORD", function()
-        pcall(function() setclipboard("https://discord.gg/JAWwytSaBZ") end)
+    createButton("📋 COPY Whatsapp", function()
+        pcall(function() setclipboard("https://whatsapp.com/channel/0029Vb8I5RR47Xe4o7dIu32e") end)
         local notif = Instance.new("ScreenGui")
-        notif.Name = "DiscordNotif"
+        notif.Name = "whatsappNotif"
         notif.Parent = CoreGui
         local f = Instance.new("Frame")
         f.Size = UDim2.new(0, 280, 0, 60)
@@ -1857,7 +1857,7 @@ function createMainGUI()
         local l = Instance.new("TextLabel")
         l.Size = UDim2.new(1, 0, 1, 0)
         l.BackgroundTransparency = 1
-        l.Text = "✅ Discord link copied!"
+        l.Text = "✅whatsapp copiado!"
         l.TextColor3 = Colors.Success
         l.TextSize = 14
         l.Font = Enum.Font.GothamBold
