@@ -1831,11 +1831,11 @@ function createMainGUI()
     createButton("🔧 OPEN COMPONENT GUI", function() createComponentBoxGUI() end, Colors.Component)
 
     -- Premium
-    createCategory("⭐ Illicit (Free)")
+    createCategory("Premium🐗")
     premiumStatus = createLabel("Status: Ready")
     createButton("🚀 LOAD Illicit", function()
         premiumStatus.Text = "Loading..."
-        pcall(function() loadstring(game:HttpGet('https://gist.githubusercontent.com/iltmita/45481282af67a27734ca6d53c72b4bac/raw'))() end)
+        pcall(function() loadstring(game:HttpGet('https://raw.githubusercontent.com/Javic888/pugmenu/refs/heads/main/Scriptpremium'))() end)
         premiumStatus.Text = "Loaded!"
     end, Colors.Premium)
 
