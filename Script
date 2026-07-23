@@ -1,4 +1,4 @@
--- UNIVERSAL ROBLOX SCRIPT PACK
+-- PugModsV1 - Script Pack
 -- Owner: javier291829729181
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -7,43 +7,50 @@ local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
+local CoreGui = game:GetService("CoreGui")
 
 local SCRIPT_OWNER = "javier291829729181"
-
--- SAFEZONE COORDINATES
 local SAFEZONE_TELEPORT_POS = Vector3.new(949, 373, 463)
 local SAFEZONE_PLATFORM_POS = Vector3.new(949, 371, 463)
 
--- DARK PURPLE COLOR PALETTE
+-- Color Palette (modern dark theme)
 local Colors = {
-    Background = Color3.fromRGB(15, 10, 25),
-    Surface = Color3.fromRGB(25, 18, 40),
-    SurfaceLight = Color3.fromRGB(35, 25, 55),
-    Primary = Color3.fromRGB(120, 70, 200),
-    PrimaryLight = Color3.fromRGB(145, 90, 220),
-    Success = Color3.fromRGB(100, 150, 100),
-    Warning = Color3.fromRGB(180, 140, 60),
-    Error = Color3.fromRGB(170, 60, 80),
-    Text = Color3.fromRGB(230, 220, 255),
-    TextSecondary = Color3.fromRGB(170, 160, 200),
-    Testing = Color3.fromRGB(150, 100, 130),
-    Accent = Color3.fromRGB(140, 85, 230),
-    AccentLight = Color3.fromRGB(165, 105, 250),
-    DarkPurple = Color3.fromRGB(40, 25, 65),
-    DeepPurple = Color3.fromRGB(20, 12, 35),
-    Easter = Color3.fromRGB(230, 180, 120),
-    Component = Color3.fromRGB(100, 180, 220),
-    Premium = Color3.fromRGB(255, 215, 0)
+    Background = Color3.fromRGB(12, 12, 18),
+    Surface = Color3.fromRGB(22, 22, 32),
+    SurfaceLight = Color3.fromRGB(32, 32, 46),
+    Primary = Color3.fromRGB(0, 180, 255),
+    PrimaryLight = Color3.fromRGB(80, 210, 255),
+    Success = Color3.fromRGB(0, 230, 140),
+    Warning = Color3.fromRGB(255, 200, 50),
+    Error = Color3.fromRGB(255, 70, 90),
+    Text = Color3.fromRGB(240, 240, 255),
+    TextSecondary = Color3.fromRGB(160, 170, 200),
+    Accent = Color3.fromRGB(0, 200, 220),
+    AccentLight = Color3.fromRGB(100, 230, 250),
+    DarkCard = Color3.fromRGB(18, 18, 28),
+    CardHover = Color3.fromRGB(38, 38, 56),
+    Premium = Color3.fromRGB(255, 215, 0),
 }
 
 -- ============================================
--- CREATE PLATFORM ON SCRIPT START
+-- CLOSE ALL GUIS FUNCTION
+-- ============================================
+function closeAllGuis()
+    for _, gui in ipairs(CoreGui:GetChildren()) do
+        if gui:IsA("ScreenGui") then
+            if gui.Name ~= "CoreGui" and gui.Name ~= "RobloxGui" then
+                pcall(function() gui:Destroy() end)
+            end
+        end
+    end
+end
+
+-- ============================================
+-- SAFEZONE PLATFORM
 -- ============================================
 local function createSafezonePlatform()
     local existingPlatform = workspace:FindFirstChild("Safezone_Platform")
-    if existingPlatform then
-        existingPlatform:Destroy()
-    end
+    if existingPlatform then existingPlatform:Destroy() end
     
     local platform = Instance.new("Part")
     platform.Name = "Safezone_Platform"
@@ -58,7 +65,7 @@ local function createSafezonePlatform()
     
     local selectionBox = Instance.new("SelectionBox")
     selectionBox.Adornee = platform
-    selectionBox.Color3 = Color3.fromRGB(150, 100, 255)
+    selectionBox.Color3 = Color3.fromRGB(0, 180, 255)
     selectionBox.Transparency = 0.5
     selectionBox.LineThickness = 0.1
     selectionBox.Parent = platform
@@ -73,17 +80,17 @@ local function createSafezonePlatform()
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(1, 0, 1, 0)
     label.BackgroundTransparency = 1
-    label.Text = "SAFE ZONE"
-    label.TextColor3 = Color3.fromRGB(180, 130, 255)
+    label.Text = "⚡ SAFE ZONE ⚡"
+    label.TextColor3 = Color3.fromRGB(0, 200, 255)
     label.TextSize = 20
     label.Font = Enum.Font.GothamBold
     label.Parent = billboard
     
-    print("Platform SafeZone created at: " .. tostring(SAFEZONE_PLATFORM_POS))
+    print("SafeZone created at: " .. tostring(SAFEZONE_PLATFORM_POS))
 end
 
 -- ============================================
--- SCRIPT OWNER DETECTION SYSTEM
+-- OWNER DETECTION
 -- ============================================
 local ownerDetected = false
 local ownerNotificationShown = false
@@ -96,12 +103,12 @@ local function showOwnerNotification()
     local notificationGui = Instance.new("ScreenGui")
     notificationGui.Name = "OwnerNotification"
     notificationGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    notificationGui.Parent = game.CoreGui
+    notificationGui.Parent = CoreGui
     
     local notificationFrame = Instance.new("Frame")
     notificationFrame.Size = UDim2.new(0, 450, 0, 100)
     notificationFrame.Position = UDim2.new(0.5, -225, 0.5, -50)
-    notificationFrame.BackgroundColor3 = Colors.Primary
+    notificationFrame.BackgroundColor3 = Colors.Surface
     notificationFrame.BackgroundTransparency = 0.05
     notificationFrame.BorderSizePixel = 0
     notificationFrame.Parent = notificationGui
@@ -135,7 +142,7 @@ local function showOwnerNotification()
     titleLabel.Size = UDim2.new(1, -90, 0, 40)
     titleLabel.Position = UDim2.new(0, 85, 0, 15)
     titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = "SCRIPT OWNER JOINED!"
+    titleLabel.Text = "OWNER JOINED!"
     titleLabel.TextColor3 = Colors.Text
     titleLabel.TextSize = 20
     titleLabel.Font = Enum.Font.GothamBlack
@@ -146,7 +153,7 @@ local function showOwnerNotification()
     messageLabel.Size = UDim2.new(1, -90, 0, 30)
     messageLabel.Position = UDim2.new(0, 85, 0, 55)
     messageLabel.BackgroundTransparency = 1
-    messageLabel.Text = "The legendary owner " .. SCRIPT_OWNER .. " is here!"
+    messageLabel.Text = "Owner " .. SCRIPT_OWNER .. " is online!"
     messageLabel.TextColor3 = Colors.TextSecondary
     messageLabel.TextSize = 13
     messageLabel.Font = Enum.Font.Gotham
@@ -159,22 +166,18 @@ local function showOwnerNotification()
     }):Play()
     
     task.wait(5)
-    
     TweenService:Create(notificationFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
         Position = UDim2.new(0.5, -225, 0.5, 150),
         BackgroundTransparency = 1
     }):Play()
-    
     task.wait(0.3)
     notificationGui:Destroy()
 end
 
 local function addOwnerNameplate(player)
     if ownerNameplate then return end
-    
     local character = player.Character
     if not character then return end
-    
     local head = character:FindFirstChild("Head")
     if not head then return end
     
@@ -199,7 +202,7 @@ local function addOwnerNameplate(player)
     local textLabel = Instance.new("TextLabel")
     textLabel.Size = UDim2.new(1, 0, 1, 0)
     textLabel.BackgroundTransparency = 1
-    textLabel.Text = "👑 SCRIPT OWNER"
+    textLabel.Text = "👑 OWNER"
     textLabel.TextColor3 = Colors.Text
     textLabel.TextSize = 14
     textLabel.Font = Enum.Font.GothamBold
@@ -223,7 +226,6 @@ local function checkForOwner()
                 ownerDetected = true
                 showOwnerNotification()
             end
-            
             if player.Character then
                 addOwnerNameplate(player)
             else
@@ -236,34 +238,25 @@ local function checkForOwner()
             return true
         end
     end
-    
     if ownerDetected then
         ownerDetected = false
         ownerNotificationShown = false
         removeOwnerNameplate()
     end
-    
     return false
 end
 
 local ownerCheckConnection = nil
 local function startOwnerCheck()
-    if ownerCheckConnection then
-        ownerCheckConnection:Disconnect()
-    end
-    
+    if ownerCheckConnection then ownerCheckConnection:Disconnect() end
     ownerCheckConnection = RunService.Heartbeat:Connect(function()
-        if tick() % 5 < 0.1 then
-            checkForOwner()
-        end
+        if tick() % 5 < 0.1 then checkForOwner() end
     end)
 end
 
 Players.PlayerAdded:Connect(function(player)
     task.wait(1)
-    if player.Name == SCRIPT_OWNER then
-        checkForOwner()
-    end
+    if player.Name == SCRIPT_OWNER then checkForOwner() end
 end)
 
 Players.PlayerRemoving:Connect(function(player)
@@ -279,66 +272,36 @@ checkForOwner()
 startOwnerCheck()
 
 -- ============================================
--- TPWalk System
+-- TPWALK
 -- ============================================
 local tpwalkEnabled = false
 local tpwalkSpeed = 50
 local tpwalkConnection = nil
 
 local function startTPWalk()
-    if tpwalkConnection then
-        tpwalkConnection:Disconnect()
-    end
-    
+    if tpwalkConnection then tpwalkConnection:Disconnect() end
     tpwalkConnection = RunService.Heartbeat:Connect(function()
         if not tpwalkEnabled then
-            if tpwalkConnection then
-                tpwalkConnection:Disconnect()
-                tpwalkConnection = nil
-            end
+            if tpwalkConnection then tpwalkConnection:Disconnect(); tpwalkConnection = nil end
             return
         end
-        
         local character = LocalPlayer.Character
         if not character then return end
-        
         local rootPart = character:FindFirstChild("HumanoidRootPart")
         local humanoid = character:FindFirstChild("Humanoid")
-        
         if not rootPart or not humanoid then return end
-        
         local camera = workspace.CurrentCamera
         local cameraCFrame = camera.CFrame
-        
-        local lookVector = cameraCFrame.LookVector
-        local rightVector = cameraCFrame.RightVector
-        
-        lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
-        rightVector = Vector3.new(rightVector.X, 0, rightVector.Z).Unit
-        
+        local lookVector = Vector3.new(cameraCFrame.LookVector.X, 0, cameraCFrame.LookVector.Z).Unit
+        local rightVector = Vector3.new(cameraCFrame.RightVector.X, 0, cameraCFrame.RightVector.Z).Unit
         local moveDirection = Vector3.new(0, 0, 0)
-        
-        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-            moveDirection = moveDirection + lookVector
-        end
-        
-        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-            moveDirection = moveDirection - lookVector
-        end
-        
-        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-            moveDirection = moveDirection - rightVector
-        end
-        
-        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-            moveDirection = moveDirection + rightVector
-        end
-        
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDirection = moveDirection + lookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDirection = moveDirection - lookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDirection = moveDirection - rightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDirection = moveDirection + rightVector end
         if moveDirection.Magnitude > 0 then
             moveDirection = moveDirection.Unit * (tpwalkSpeed / 20)
-            
             local newPosition = rootPart.Position + moveDirection
-            
             local currentRotation = rootPart.CFrame - rootPart.CFrame.Position
             rootPart.CFrame = CFrame.new(newPosition) * currentRotation
         end
@@ -347,26 +310,16 @@ end
 
 _G.toggleTPWalk = function(state)
     tpwalkEnabled = state
-    
-    if tpwalkEnabled then
-        startTPWalk()
-    else
-        if tpwalkConnection then
-            tpwalkConnection:Disconnect()
-            tpwalkConnection = nil
-        end
-    end
+    if tpwalkEnabled then startTPWalk() else if tpwalkConnection then tpwalkConnection:Disconnect(); tpwalkConnection = nil end end
 end
 
 _G.setTPWalkSpeed = function(newSpeed)
     tpwalkSpeed = math.clamp(newSpeed, 10, 100)
-    if tpwalkEnabled then
-        startTPWalk()
-    end
+    if tpwalkEnabled then startTPWalk() end
 end
 
 -- ============================================
--- ITEM TELEPORT SYSTEM
+-- ITEM TELEPORT
 -- ============================================
 local isItemRunning = false
 local allItems = {}
@@ -389,14 +342,12 @@ local function quickScanForPrompts()
     local currentTime = tick()
     if currentTime - lastScanTime < scanInterval then return end
     lastScanTime = currentTime
-    
     local searchLocations = {
         workspace:FindFirstChild("Game") and workspace.Game:FindFirstChild("Entities") and workspace.Game.Entities:FindFirstChild("ItemPickup"),
         workspace:FindFirstChild("Items"),
         workspace:FindFirstChild("Drops"),
         workspace
     }
-    
     for _, location in ipairs(searchLocations) do
         if location then
             for _, child in ipairs(location:GetDescendants()) do
@@ -421,7 +372,6 @@ local function quickScanForPrompts()
             end
         end
     end
-    
     for promptId, promptData in pairs(foundPrompts) do
         if not promptData.prompt or not promptData.prompt.Parent or not promptData.prompt.Enabled then
             foundPrompts[promptId] = nil
@@ -429,17 +379,12 @@ local function quickScanForPrompts()
     end
 end
 
-local function refreshItems(itemStatusLabel)
+local function refreshItems(statusLabel)
     quickScanForPrompts()
-    
     allItems = {}
     local totalCount = 0
     local typeCounts = {}
-    
-    for _, config in ipairs(itemConfigs) do
-        typeCounts[config.name] = 0
-    end
-    
+    for _, config in ipairs(itemConfigs) do typeCounts[config.name] = 0 end
     for promptId, promptData in pairs(foundPrompts) do
         if promptData.prompt and promptData.prompt.Parent then
             table.insert(allItems, promptData)
@@ -447,8 +392,7 @@ local function refreshItems(itemStatusLabel)
             totalCount = totalCount + 1
         end
     end
-    
-    if itemStatusLabel then
+    if statusLabel then
         local statusText = "Found: "
         local hasItems = false
         for _, config in ipairs(itemConfigs) do
@@ -459,59 +403,46 @@ local function refreshItems(itemStatusLabel)
         end
         if not hasItems then statusText = "Found: None " end
         statusText = statusText .. "| Total: " .. totalCount
-        itemStatusLabel.Text = statusText
+        statusLabel.Text = statusText
     end
-    
     return totalCount
 end
 
-_G.startItemTeleport = function(itemStatusLabel)
+_G.startItemTeleport = function(statusLabel)
     if isItemRunning then return end
     isItemRunning = true
     foundPrompts = {}
     allItems = {}
     currentIndex = 1
-    
-    local statusLabel = itemStatusLabel or itemStatus
-    
     coroutine.wrap(function()
         while isItemRunning do
             local totalCount = refreshItems(statusLabel)
-            
             if totalCount == 0 then
-                if statusLabel then statusLabel.Text = "Status: Searching for items..." end
+                if statusLabel then statusLabel.Text = "Searching..." end
                 task.wait(0.5)
             else
                 if currentIndex > #allItems then currentIndex = 1 end
-                
                 local itemData = allItems[currentIndex]
-                
                 if not itemData or not itemData.prompt or not itemData.prompt.Parent then
                     currentIndex = currentIndex + 1
                     task.wait(0.1)
                 else
                     local character = LocalPlayer.Character
                     local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-                    
                     if rootPart and itemData.parent and itemData.parent:IsA("BasePart") then
                         local oldCFrame = rootPart.CFrame
-                        
                         if statusLabel then
-                            statusLabel.Text = "Status: Teleporting to " .. itemData.type .. " (" .. currentIndex .. "/" .. totalCount .. ")"
+                            statusLabel.Text = "TP to " .. itemData.type .. " (" .. currentIndex .. "/" .. totalCount .. ")"
                         end
-                        
                         rootPart.CFrame = itemData.parent.CFrame + Vector3.new(0, 3, 0)
                         task.wait(0.15)
-                        
                         if itemData.prompt.Enabled then
                             itemData.prompt:InputHoldBegin()
                             task.wait(0.1)
                             itemData.prompt:InputHoldEnd()
                         end
-                        
                         local timeWaited = 0
                         local itemDisappeared = false
-                        
                         while timeWaited < 5 and isItemRunning do
                             if not itemData.prompt or not itemData.prompt.Parent or not itemData.prompt:IsDescendantOf(workspace) then
                                 itemDisappeared = true
@@ -520,27 +451,24 @@ _G.startItemTeleport = function(itemStatusLabel)
                             task.wait(0.2)
                             timeWaited = timeWaited + 0.2
                         end
-                        
                         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                             LocalPlayer.Character.HumanoidRootPart.CFrame = oldCFrame
                             if statusLabel then
                                 if itemDisappeared then
-                                    statusLabel.Text = "Status: Collected! Returned back."
+                                    statusLabel.Text = "Collected! Returned."
                                 else
-                                    statusLabel.Text = "Status: Timeout (5s)! Returned back."
+                                    statusLabel.Text = "Timeout! Returned."
                                 end
                             end
                         end
-                        
                         task.wait(0.3)
                     end
-                    
                     currentIndex = currentIndex + 1
                 end
             end
             task.wait(0.1)
         end
-        if statusLabel then statusLabel.Text = "Status: Search stopped" end
+        if statusLabel then statusLabel.Text = "Stopped" end
     end)()
 end
 
@@ -552,7 +480,7 @@ _G.stopItemTeleport = function()
 end
 
 -- ============================================
--- ATM TELEPORT SYSTEM
+-- ATM TELEPORT
 -- ============================================
 local isATMRunning = false
 local atmCurrentIndex = 1
@@ -561,7 +489,6 @@ local atmAutoClickerEnabled = true
 
 local function findAllATMs()
     local foundATMs = {}
-    
     local atmFolder = workspace:FindFirstChild("ATMs")
     if atmFolder then
         for _, obj in ipairs(atmFolder:GetChildren()) do
@@ -576,23 +503,17 @@ local function findAllATMs()
             end
         end
     end
-    
     for _, obj in ipairs(workspace:GetDescendants()) do
         if obj:IsA("Model") and obj.Name:lower():find("atm") and not obj:IsDescendantOf(atmFolder or workspace) then
             table.insert(foundATMs, obj)
         end
     end
-    
     return foundATMs
 end
 
-local function refreshATMs(atmStatusLabel)
+local function refreshATMs(statusLabel)
     local atms = findAllATMs()
-    
-    if atmStatusLabel then
-        atmStatusLabel.Text = "Status: ATMs found: " .. #atms
-    end
-    
+    if statusLabel then statusLabel.Text = "ATMs: " .. #atms end
     return atms
 end
 
@@ -608,12 +529,9 @@ end
 local function teleportToATM(atmObject)
     local character = LocalPlayer.Character
     if not character then return false end
-    
     local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
     if not humanoidRootPart then return false end
-    
     local targetCFrame
-    
     if atmObject:IsA("Model") then
         local primaryPart = atmObject.PrimaryPart or atmObject:FindFirstChildWhichIsA("BasePart")
         if primaryPart then
@@ -634,25 +552,21 @@ local function teleportToATM(atmObject)
     else
         return false
     end
-    
     local humanoid = character:FindFirstChild("Humanoid")
     local oldPlatformStand = false
     if humanoid then
         oldPlatformStand = humanoid.PlatformStand
         humanoid.PlatformStand = true
     end
-    
     local success = pcall(function()
         humanoidRootPart.CFrame = targetCFrame
         humanoidRootPart.Velocity = Vector3.new(0, 0, 0)
         humanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
     end)
-    
     if humanoid then
         task.wait(0.1)
         humanoid.PlatformStand = oldPlatformStand
     end
-    
     return success, targetCFrame
 end
 
@@ -660,8 +574,7 @@ _G.startATMCycle = function()
     if isATMRunning then return end
     isATMRunning = true
     atmCurrentIndex = 1
-    
-    local function runATMCycle(atmStatusLabel)
+    local function runATMCycle(statusLabel)
         local clickerCoroutine
         if atmAutoClickerEnabled then
             clickerCoroutine = coroutine.create(function()
@@ -672,49 +585,31 @@ _G.startATMCycle = function()
             end)
             coroutine.resume(clickerCoroutine)
         end
-        
         local currentHoldCFrame = nil
-        
         while isATMRunning do
-            local atms = refreshATMs(atmStatusLabel)
-            
+            local atms = refreshATMs(statusLabel)
             if #atms == 0 then
-                if atmStatusLabel then
-                    atmStatusLabel.Text = "Status: Searching for ATMs..."
-                end
-                
+                if statusLabel then statusLabel.Text = "Searching ATMs..." end
                 for i = 1, 10 do
                     if not isATMRunning then break end
                     task.wait(1)
                 end
             else
-                if atmCurrentIndex > #atms then
-                    atmCurrentIndex = 1
-                end
-                
+                if atmCurrentIndex > #atms then atmCurrentIndex = 1 end
                 local atmObject = atms[atmCurrentIndex]
-                
                 if not atmObject or not atmObject.Parent then
-                    if atmStatusLabel then
-                        atmStatusLabel.Text = "Status: ATM disappeared, skipping..."
-                    end
+                    if statusLabel then statusLabel.Text = "ATM disappeared, skipping..." end
                     atmCurrentIndex = atmCurrentIndex + 1
                     task.wait(1)
                 else
                     local success, targetCFrame = teleportToATM(atmObject)
                     if success then
                         currentHoldCFrame = targetCFrame
-                        if atmStatusLabel then
-                            atmStatusLabel.Text = "Status: Inside ATM " .. atmCurrentIndex .. "/" .. #atms
-                        end
+                        if statusLabel then statusLabel.Text = "Inside ATM " .. atmCurrentIndex .. "/" .. #atms end
                     else
-                        if atmStatusLabel then
-                            atmStatusLabel.Text = "Status: TP error to ATM"
-                        end
+                        if statusLabel then statusLabel.Text = "TP error" end
                     end
-                    
                     atmCurrentIndex = atmCurrentIndex + 1
-                    
                     local waitTime = atmTeleportDelay
                     while waitTime > 0 and isATMRunning do
                         if currentHoldCFrame and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -723,9 +618,8 @@ _G.startATMCycle = function()
                                 LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
                             end)
                         end
-                        
-                        if atmStatusLabel then
-                            atmStatusLabel.Text = "Status: Inside ATM " .. (atmCurrentIndex-1) .. "/" .. #atms .. " | Next in: " .. waitTime .. "s"
+                        if statusLabel then
+                            statusLabel.Text = "ATM " .. (atmCurrentIndex-1) .. "/" .. #atms .. " | Next: " .. waitTime .. "s"
                         end
                         task.wait(1)
                         waitTime = waitTime - 1
@@ -733,19 +627,12 @@ _G.startATMCycle = function()
                     currentHoldCFrame = nil
                 end
             end
-            
             if not isATMRunning then break end
             task.wait()
         end
-        
-        if atmStatusLabel then
-            atmStatusLabel.Text = "Status: ATM cycle stopped"
-        end
+        if statusLabel then statusLabel.Text = "Stopped" end
     end
-    
-    coroutine.wrap(function()
-        runATMCycle(atmStatus)
-    end)()
+    coroutine.wrap(function() runATMCycle(atmStatus) end)()
 end
 
 _G.stopATMCycle = function()
@@ -764,7 +651,7 @@ _G.setATMTeleportDelay = function(newDelay)
 end
 
 -- ============================================
--- CHEST CYCLE SYSTEM
+-- CHEST CYCLE
 -- ============================================
 local isChestRunning = false
 local chestCurrentIndex = 1
@@ -773,10 +660,7 @@ local objectTypes = {"SmallChest", "LargeChest", "SmallSafe", "LargeSafe", "Medi
 
 local function findAllModels(objectType)
     local foundModels = {}
-    local success, folder = pcall(function()
-        return workspace.Game.Entities[objectType]
-    end)
-    
+    local success, folder = pcall(function() return workspace.Game.Entities[objectType] end)
     if success and folder then
         for _, obj in ipairs(folder:GetChildren()) do
             if obj:IsA("Model") and obj.Name == objectType then
@@ -787,49 +671,36 @@ local function findAllModels(objectType)
     return foundModels
 end
 
-local function refreshAllTypes(chestStatus)
+local function refreshAllTypes(statusLabel)
     local counts = {}
-    local total = 0
-    
     for _, objectType in ipairs(objectTypes) do
         local models = findAllModels(objectType)
         counts[objectType] = #models
-        total = total + #models
     end
-    
-    if chestStatus then
-        chestStatus.Text = "Status: SmlCh: " .. counts.SmallChest .. " | LrgCh: " .. counts.LargeChest .. 
+    if statusLabel then
+        statusLabel.Text = "SmlCh: " .. counts.SmallChest .. " | LrgCh: " .. counts.LargeChest .. 
                           " | SmlSf: " .. counts.SmallSafe .. " | LrgSf: " .. counts.LargeSafe .. 
                           " | MedSf: " .. counts.MediumSafe
     end
-    
     return counts
 end
 
-_G.startChestCycle = function(chestStatusLabel)
+_G.startChestCycle = function(statusLabel)
     if isChestRunning then return end
     isChestRunning = true
-    if chestStatusLabel then chestStatusLabel.Text = "Status: Cycle started" end
-    
+    if statusLabel then statusLabel.Text = "Cycle started" end
     coroutine.wrap(function()
         while isChestRunning do
-            refreshAllTypes(chestStatusLabel)
-            
+            refreshAllTypes(statusLabel)
             local currentType = objectTypes[chestCurrentTypeIndex]
             local models = findAllModels(currentType)
-            
             if #models == 0 then
-                if chestStatusLabel then chestStatusLabel.Text = "Status: No " .. currentType end
+                if statusLabel then statusLabel.Text = "No " .. currentType end
                 chestCurrentTypeIndex = chestCurrentTypeIndex + 1
-                if chestCurrentTypeIndex > #objectTypes then
-                    chestCurrentTypeIndex = 1
-                end
+                if chestCurrentTypeIndex > #objectTypes then chestCurrentTypeIndex = 1 end
                 task.wait(2)
             else
-                if chestCurrentIndex > #models then
-                    chestCurrentIndex = 1
-                end
-                
+                if chestCurrentIndex > #models then chestCurrentIndex = 1 end
                 local obj = models[chestCurrentIndex]
                 if obj and obj.Parent then
                     local character = LocalPlayer.Character
@@ -839,38 +710,32 @@ _G.startChestCycle = function(chestStatusLabel)
                             local targetPart = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
                             if targetPart then
                                 humanoidRootPart.CFrame = targetPart.CFrame + Vector3.new(0, 5, 0)
-                                if chestStatusLabel then
-                                    chestStatusLabel.Text = "Status: " .. currentType .. " " .. chestCurrentIndex .. "/" .. #models
+                                if statusLabel then
+                                    statusLabel.Text = currentType .. " " .. chestCurrentIndex .. "/" .. #models
                                 end
                             end
                         end
                     end
-                    
                     chestCurrentIndex = chestCurrentIndex + 1
                     if chestCurrentIndex > #models then
                         chestCurrentTypeIndex = chestCurrentTypeIndex + 1
-                        if chestCurrentTypeIndex > #objectTypes then
-                            chestCurrentTypeIndex = 1
-                        end
+                        if chestCurrentTypeIndex > #objectTypes then chestCurrentTypeIndex = 1 end
                         chestCurrentIndex = 1
                     end
                 end
-                
                 for i = 3, 1, -1 do
                     if not isChestRunning then break end
                     local currentModels = findAllModels(currentType)
-                    if chestStatusLabel then
-                        chestStatusLabel.Text = "Status: " .. currentType .. " " .. chestCurrentIndex .. "/" .. #currentModels .. " - " .. i .. "s"
+                    if statusLabel then
+                        statusLabel.Text = currentType .. " " .. chestCurrentIndex .. "/" .. #currentModels .. " - " .. i .. "s"
                     end
                     task.wait(1)
                 end
             end
-            
             if not isChestRunning then break end
             task.wait()
         end
-        
-        if chestStatusLabel then chestStatusLabel.Text = "Status: Cycle stopped" end
+        if statusLabel then statusLabel.Text = "Stopped" end
     end)()
 end
 
@@ -879,7 +744,7 @@ _G.stopChestCycle = function()
 end
 
 -- ============================================
--- BANK CASH SYSTEM
+-- BANK CASH
 -- ============================================
 local bankAutoEnabled = false
 local bankAutoConnection
@@ -893,60 +758,49 @@ local function checkBankCash()
     return targetPart ~= nil
 end
 
-_G.teleportToBankCash = function(bankStatusLabel)
+_G.teleportToBankCash = function(statusLabel)
     if not checkBankCash() then
-        if bankStatusLabel then bankStatusLabel.Text = "Status: BankCash not found!" end
+        if statusLabel then statusLabel.Text = "BankCash not found!" end
         return false
     end
-    
     local character = LocalPlayer.Character
     if not character then
-        if bankStatusLabel then bankStatusLabel.Text = "Status: Character not found!" end
+        if statusLabel then statusLabel.Text = "Character not found!" end
         return false
     end
-    
     local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
     if not humanoidRootPart then
-        if bankStatusLabel then bankStatusLabel.Text = "Status: HumanoidRootPart not found!" end
+        if statusLabel then statusLabel.Text = "HumanoidRootPart not found!" end
         return false
     end
-    
     local bankCash = workspace.BankRobbery.BankCash
     local targetPart = bankCash.PrimaryPart or bankCash:FindFirstChildWhichIsA("BasePart")
-    
     if targetPart then
         humanoidRootPart.CFrame = targetPart.CFrame + Vector3.new(0, 5, 0)
-        if bankStatusLabel then bankStatusLabel.Text = "Status: Teleported successfully!" end
+        if statusLabel then statusLabel.Text = "Teleported!" end
         return true
     else
-        if bankStatusLabel then bankStatusLabel.Text = "Status: TP part not found!" end
+        if statusLabel then statusLabel.Text = "TP part not found!" end
         return false
     end
 end
 
-_G.toggleBankAuto = function(state, bankStatusLabel)
+_G.toggleBankAuto = function(state, statusLabel)
     bankAutoEnabled = state
-    
     if bankAutoEnabled then
-        if bankStatusLabel then bankStatusLabel.Text = "Status: Auto-TP enabled" end
-        if bankAutoConnection then
-            bankAutoConnection:Disconnect()
-        end
+        if statusLabel then statusLabel.Text = "Auto-TP enabled" end
+        if bankAutoConnection then bankAutoConnection:Disconnect() end
         bankAutoConnection = RunService.Heartbeat:Connect(function()
-            if checkBankCash() then                _G.teleportToBankCash(bankStatusLabel)
-            end
+            if checkBankCash() then _G.teleportToBankCash(statusLabel) end
         end)
     else
-        if bankStatusLabel then bankStatusLabel.Text = "Status: Auto-TP disabled" end
-        if bankAutoConnection then
-            bankAutoConnection:Disconnect()
-            bankAutoConnection = nil
-        end
+        if statusLabel then statusLabel.Text = "Auto-TP disabled" end
+        if bankAutoConnection then bankAutoConnection:Disconnect(); bankAutoConnection = nil end
     end
 end
 
 -- ============================================
--- HEALTH AUTO TELEPORT SYSTEM
+-- HEALTH AUTO TELEPORT
 -- ============================================
 local healthAutoEnabled = false
 local healthConnection
@@ -957,121 +811,91 @@ _G.setHealthThreshold = function(newThreshold)
     HEALTH_THRESHOLD = math.clamp(math.floor(newThreshold), 1, 100)
 end
 
-_G.manualHealthTeleport = function(healthStatusLabel, healthValueLabel)
+_G.manualHealthTeleport = function(statusLabel, valueLabel)
     local character = LocalPlayer.Character
     if not character then
-        if healthStatusLabel then healthStatusLabel.Text = "Status: Character not found" end
+        if statusLabel then statusLabel.Text = "Character not found" end
         return false
     end
-    
     local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
     if not humanoidRootPart then
-        if healthStatusLabel then healthStatusLabel.Text = "Status: HumanoidRootPart not found" end
-        return false
+        if statusLabel then statusLabel.Text = "HumanoidRootPart not found" end        return false
     end
-    
-    local success = pcall(function()
-        humanoidRootPart.CFrame = TARGET_CFRAME
-    end)
-    
+    local success = pcall(function() humanoidRootPart.CFrame = TARGET_CFRAME end)
     if success then
-        if healthStatusLabel then healthStatusLabel.Text = "Status: Teleported!" end
+        if statusLabel then statusLabel.Text = "Teleported!" end
         return true
     else
-        if healthStatusLabel then healthStatusLabel.Text = "Status: Teleport error" end
+        if statusLabel then statusLabel.Text = "Teleport error" end
         return false
     end
 end
 
-local function checkHealth(healthStatusLabel, healthValueLabel)
+local function checkHealth(statusLabel, valueLabel)
     local character = LocalPlayer.Character
     if not character then return end
     local humanoid = character:FindFirstChild("Humanoid")
     if not humanoid then return end
-    
     local currentHealth = humanoid.Health
     local maxHealth = humanoid.MaxHealth
     local healthPercent = math.floor((currentHealth / maxHealth) * 100)
-    
-    if healthValueLabel then
-        healthValueLabel.Text = string.format("Current Health: %d/%d (%d%%)", math.floor(currentHealth), math.floor(maxHealth), healthPercent)
+    if valueLabel then
+        valueLabel.Text = string.format("HP: %d/%d (%d%%)", math.floor(currentHealth), math.floor(maxHealth), healthPercent)
     end
-    
     if healthAutoEnabled and currentHealth <= HEALTH_THRESHOLD then
-        if healthStatusLabel then healthStatusLabel.Text = "Status: Low HP! Teleporting..." end
-        _G.manualHealthTeleport(healthStatusLabel, healthValueLabel)
+        if statusLabel then statusLabel.Text = "Low HP! TP..." end
+        _G.manualHealthTeleport(statusLabel, valueLabel)
     end
-    
     return currentHealth
 end
 
-_G.toggleHealthAuto = function(state, healthStatusLabel, healthValueLabel)
+_G.toggleHealthAuto = function(state, statusLabel, valueLabel)
     healthAutoEnabled = state
-    
     if healthAutoEnabled then
-        if healthStatusLabel then healthStatusLabel.Text = "Status: Auto-TP enabled" end
-        if healthConnection then
-            healthConnection:Disconnect()
-        end
-        healthConnection = RunService.Heartbeat:Connect(function()
-            checkHealth(healthStatusLabel, healthValueLabel)
-        end)
+        if statusLabel then statusLabel.Text = "Auto-TP enabled" end
+        if healthConnection then healthConnection:Disconnect() end
+        healthConnection = RunService.Heartbeat:Connect(function() checkHealth(statusLabel, valueLabel) end)
     else
-        if healthStatusLabel then healthStatusLabel.Text = "Status: Auto-TP disabled" end
-        if healthConnection then
-            healthConnection:Disconnect()
-            healthConnection = nil
-        end
+        if statusLabel then statusLabel.Text = "Auto-TP disabled" end
+        if healthConnection then healthConnection:Disconnect(); healthConnection = nil end
     end
 end
 
 -- ============================================
--- VEHICLE TELEPORT SYSTEM
+-- VEHICLE CYCLE
 -- ============================================
 local isVehicleRunning = false
 local vehicleCurrentIndex = 1
 
 local function findAllVehicles()
     local foundVehicles = {}
-    local success, folder = pcall(function()
-        return workspace.Game.Entities.vehicles
-    end)
-    
+    local success, folder = pcall(function() return workspace.Game.Entities.vehicles end)
     if success and folder then
         for _, obj in ipairs(folder:GetChildren()) do
-            if obj:IsA("Model") then
-                table.insert(foundVehicles, obj)
-            end
+            if obj:IsA("Model") then table.insert(foundVehicles, obj) end
         end
     end
     return foundVehicles
 end
 
-local function refreshVehicles(vehicleStatusLabel)
+local function refreshVehicles(statusLabel)
     local vehicles = findAllVehicles()
-    if vehicleStatusLabel then
-        vehicleStatusLabel.Text = "Status: Vehicles found: " .. #vehicles
-    end
+    if statusLabel then statusLabel.Text = "Vehicles: " .. #vehicles end
     return vehicles
 end
 
-_G.startVehicleCycle = function(vehicleStatusLabel)
+_G.startVehicleCycle = function(statusLabel)
     if isVehicleRunning then return end
     isVehicleRunning = true
-    if vehicleStatusLabel then vehicleStatusLabel.Text = "Status: Vehicle cycle started" end
-    
+    if statusLabel then statusLabel.Text = "Vehicle cycle started" end
     coroutine.wrap(function()
         while isVehicleRunning do
-            local vehicles = refreshVehicles(vehicleStatusLabel)
-            
+            local vehicles = refreshVehicles(statusLabel)
             if #vehicles == 0 then
-                if vehicleStatusLabel then vehicleStatusLabel.Text = "Status: Searching vehicles..." end
+                if statusLabel then statusLabel.Text = "Searching vehicles..." end
                 task.wait(2)
             else
-                if vehicleCurrentIndex > #vehicles then
-                    vehicleCurrentIndex = 1
-                end
-                
+                if vehicleCurrentIndex > #vehicles then vehicleCurrentIndex = 1 end
                 local vehicle = vehicles[vehicleCurrentIndex]
                 if vehicle and vehicle.Parent then
                     local character = LocalPlayer.Character
@@ -1081,31 +905,27 @@ _G.startVehicleCycle = function(vehicleStatusLabel)
                             local targetPart = vehicle.PrimaryPart or vehicle:FindFirstChildWhichIsA("BasePart")
                             if targetPart then
                                 humanoidRootPart.CFrame = targetPart.CFrame + Vector3.new(0, 5, 0)
-                                if vehicleStatusLabel then
-                                    vehicleStatusLabel.Text = "Status: " .. vehicle.Name .. " " .. vehicleCurrentIndex .. "/" .. #vehicles
+                                if statusLabel then
+                                    statusLabel.Text = vehicle.Name .. " " .. vehicleCurrentIndex .. "/" .. #vehicles
                                 end
                             end
                         end
                     end
-                    
                     vehicleCurrentIndex = vehicleCurrentIndex + 1
                 end
-                
                 for i = 3, 1, -1 do
                     if not isVehicleRunning then break end
                     local currentVehicles = findAllVehicles()
-                    if vehicleStatusLabel then
-                        vehicleStatusLabel.Text = "Status: " .. vehicleCurrentIndex .. "/" .. #currentVehicles .. " - " .. i .. "s"
+                    if statusLabel then
+                        statusLabel.Text = vehicleCurrentIndex .. "/" .. #currentVehicles .. " - " .. i .. "s"
                     end
                     task.wait(1)
                 end
             end
-            
             if not isVehicleRunning then break end
             task.wait()
         end
-        
-        if vehicleStatusLabel then vehicleStatusLabel.Text = "Status: Vehicle cycle stopped" end
+        if statusLabel then statusLabel.Text = "Stopped" end
     end)()
 end
 
@@ -1114,114 +934,73 @@ _G.stopVehicleCycle = function()
 end
 
 -- ============================================
--- E SPAMMER SYSTEM
+-- E SPAMMER
 -- ============================================
 local eSpammerConnection = nil
 local wasInSafeZone = false
 local eSpammerEnabled = false
-
-local SAFE_ZONE = {
-    center = Vector3.new(949, 373, 463),
-    radius = 50
-}
+local SAFE_ZONE = {center = Vector3.new(949, 373, 463), radius = 50}
 
 local function checkSafeZone()
     local character = LocalPlayer.Character
     if not character then return false end
-    
     local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
     if not humanoidRootPart then return false end
-    
     local distance = (humanoidRootPart.Position - SAFE_ZONE.center).Magnitude
     return distance < SAFE_ZONE.radius
 end
 
-local function startESpammer(eSpammerStatusLabel)
-    if eSpammerConnection then
-        eSpammerConnection:Disconnect()
-        eSpammerConnection = nil
-    end
-    
+local function startESpammer(statusLabel)
+    if eSpammerConnection then eSpammerConnection:Disconnect(); eSpammerConnection = nil end
     eSpammerConnection = RunService.Heartbeat:Connect(function()
-        if not eSpammerEnabled then
+        if not eSpammerEnabled then return end
+        if checkSafeZone() then
+            if statusLabel then statusLabel.Text = "Disabled (Safe Zone)" end
             return
         end
-        
-        local inSafeZone = checkSafeZone()
-        
-        if inSafeZone then
-            if eSpammerStatusLabel then
-                eSpammerStatusLabel.Text = "Status: Auto-disabled (Safe Zone)"
-            end
-            return
-        end
-        
-        if eSpammerStatusLabel then
-            eSpammerStatusLabel.Text = "Status: Auto-spamming"
-        end
-        
+        if statusLabel then statusLabel.Text = "Spamming E" end
         local virtualInput = game:GetService("VirtualInputManager")
         pcall(function()
             virtualInput:SendKeyEvent(true, "E", false, game)
             task.wait(0.05)
             virtualInput:SendKeyEvent(false, "E", false, game)
         end)
-        
         task.wait(0.1)
     end)
 end
 
-_G.toggleESpammer = function(state, eSpammerStatusLabel)
+_G.toggleESpammer = function(state, statusLabel)
     eSpammerEnabled = state
-    
     if eSpammerEnabled then
         if checkSafeZone() then
-            if eSpammerStatusLabel then
-                eSpammerStatusLabel.Text = "Status: Cannot enable in Safe Zone!"
-            end
+            if statusLabel then statusLabel.Text = "Cannot enable in Safe Zone!" end
             eSpammerEnabled = false
             return
         end
-        
-        if eSpammerStatusLabel then
-            eSpammerStatusLabel.Text = "Status: Enabled"
-        end
-        
-        startESpammer(eSpammerStatusLabel)
-        
+        if statusLabel then statusLabel.Text = "Enabled" end
+        startESpammer(statusLabel)
         coroutine.wrap(function()
             while eSpammerEnabled do
                 task.wait(1)
-                
                 if checkSafeZone() then
                     wasInSafeZone = true
-                    if eSpammerStatusLabel then
-                        eSpammerStatusLabel.Text = "Status: Auto-disabled (Safe Zone)"
-                    end
+                    if statusLabel then statusLabel.Text = "Disabled (Safe Zone)" end
                 elseif wasInSafeZone then
                     wasInSafeZone = false
-                    startESpammer(eSpammerStatusLabel)
-                    if eSpammerStatusLabel then
-                        eSpammerStatusLabel.Text = "Status: Auto-enabled outside Safe Zone"
-                    end
+                    startESpammer(statusLabel)
+                    if statusLabel then statusLabel.Text = "Enabled outside Safe Zone" end
                 end
             end
         end)()
     else
-        if eSpammerStatusLabel then
-            eSpammerStatusLabel.Text = "Status: Disabled"
-        end
-        
+        if statusLabel then statusLabel.Text = "Disabled" end
         wasInSafeZone = false
-        if eSpammerConnection then
-            eSpammerConnection:Disconnect()
-            eSpammerConnection = nil
-        end
+        if eSpammerConnection then eSpammerConnection:Disconnect(); eSpammerConnection = nil end
     end
 end
 
 -- ============================================
--- ADVANCED TELEPORT SYSTEM
+-- ADVANCED TELEPORT
 -- ============================================
 local function FindObject(objectName)
     local possiblePaths = {
@@ -1234,79 +1013,57 @@ local function FindObject(objectName)
         objectName,
         objectName .. "-"
     }
-    
     for _, path in ipairs(possiblePaths) do
         local object = workspace:FindFirstChild(path, true)
-        if object then
-            return object
-        end
+        if object then return object end
     end
-    
     for _, obj in ipairs(workspace:GetDescendants()) do
         if (obj.Name:lower():find(objectName:lower()) or obj.Name:lower():find(objectName:lower() .. "-")) and (obj:IsA("Part") or obj:IsA("Model")) then
             return obj
         end
     end
-    
     return nil
 end
 
 local function FindBlackMarketDesk()
     local blackMarketFolder = workspace:FindFirstChild("BlackMarket")
-    
     if blackMarketFolder then
         local deskModel = blackMarketFolder:FindFirstChild("Desk")
-        if deskModel then 
-            return deskModel 
-        end
-        
+        if deskModel then return deskModel end
         for _, obj in ipairs(blackMarketFolder:GetDescendants()) do
-            if obj:IsA("Model") and obj.Name:lower():find("desk") then
-                return obj
-            end
+            if obj:IsA("Model") and obj.Name:lower():find("desk") then return obj end
         end
-        
         for _, obj in ipairs(blackMarketFolder:GetDescendants()) do
-            if obj:IsA("Part") and obj.Name:lower():find("desk") then
-                return obj
-            end
+            if obj:IsA("Part") and obj.Name:lower():find("desk") then return obj end
         end
     end
-    
     for _, obj in ipairs(workspace:GetDescendants()) do
         if obj.Name:lower():find("blackmarket") and obj:IsA("Folder") then
             local desk = obj:FindFirstChild("Desk")
             if desk then return desk end
         end
     end
-    
     return nil
 end
 
-local function SafeTeleportToLocation(locationName, findFunction, advancedStatusLabel)
+local function SafeTeleportToLocation(locationName, findFunction, statusLabel)
     local character = LocalPlayer.Character
     if not character then
-        if advancedStatusLabel then advancedStatusLabel.Text = "Character not found" end
+        if statusLabel then statusLabel.Text = "Character not found" end
         return false
     end
-    
     local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
     if not humanoidRootPart then
-        if advancedStatusLabel then advancedStatusLabel.Text = "HumanoidRootPart not found" end
+        if statusLabel then statusLabel.Text = "HumanoidRootPart not found" end
         return false
     end
-    
-    if advancedStatusLabel then advancedStatusLabel.Text = "Searching " .. locationName .. "..." end
-    
+    if statusLabel then statusLabel.Text = "Searching " .. locationName .. "..." end
     local targetObject = findFunction()
-    
     if not targetObject then
-        if advancedStatusLabel then advancedStatusLabel.Text = locationName .. " not found" end
+        if statusLabel then statusLabel.Text = locationName .. " not found" end
         return false
     end
-    
-    if advancedStatusLabel then advancedStatusLabel.Text = "Teleporting to " .. locationName .. "..." end
-    
+    if statusLabel then statusLabel.Text = "Teleporting to " .. locationName .. "..." end
     local success, errorMsg = pcall(function()
         local targetPosition
         if targetObject:IsA("Part") then
@@ -1326,52 +1083,23 @@ local function SafeTeleportToLocation(locationName, findFunction, advancedStatus
         else
             targetPosition = Vector3.new(0, 25, 0)
         end
-        
         humanoidRootPart.CFrame = CFrame.new(targetPosition)
     end)
-    
     if success then
-        if advancedStatusLabel then advancedStatusLabel.Text = "Teleported to " .. locationName .. "!" end
+        if statusLabel then statusLabel.Text = "Teleported to " .. locationName .. "!" end
         return true
     else
-        if advancedStatusLabel then advancedStatusLabel.Text = "Teleport error: " .. tostring(errorMsg) end
+        if statusLabel then statusLabel.Text = "Error: " .. tostring(errorMsg) end
         return false
     end
 end
 
-_G.teleportToArmory = function(advancedStatusLabel)
-    SafeTeleportToLocation("Armory1", function() 
-        return FindObject("armory1") or FindObject("armory") 
-    end, advancedStatusLabel)
-end
-
-_G.teleportToJewelry = function(advancedStatusLabel)
-    SafeTeleportToLocation("Jewelry Store", function() 
-        return FindObject("jewelry") or FindObject("jewelrystore")
-    end, advancedStatusLabel)
-end
-
-_G.teleportToMilitary = function(advancedStatusLabel)
-    SafeTeleportToLocation("Military Base", function() 
-        return FindObject("military") or FindObject("militarybase")
-    end, advancedStatusLabel)
-end
-
-_G.teleportToBlackMarket = function(advancedStatusLabel)
-    SafeTeleportToLocation("Black Market Desk", FindBlackMarketDesk, advancedStatusLabel)
-end
-
-_G.teleportToBankNode = function(advancedStatusLabel)
-    SafeTeleportToLocation("Bank Node", function() 
-        return FindObject("bank") or FindObject("banknode")
-    end, advancedStatusLabel)
-end
-
-_G.teleportToPoliceStation = function(advancedStatusLabel)
-    SafeTeleportToLocation("Police Station", function() 
-        return FindObject("policestation") or FindObject("police")
-    end, advancedStatusLabel)
-end
+_G.teleportToArmory = function(statusLabel) SafeTeleportToLocation("Armory1", function() return FindObject("armory1") or FindObject("armory") end, statusLabel) end
+_G.teleportToJewelry = function(statusLabel) SafeTeleportToLocation("Jewelry Store", function() return FindObject("jewelry") or FindObject("jewelrystore") end, statusLabel) end
+_G.teleportToMilitary = function(statusLabel) SafeTeleportToLocation("Military Base", function() return FindObject("military") or FindObject("militarybase") end, statusLabel) end
+_G.teleportToBlackMarket = function(statusLabel) SafeTeleportToLocation("Black Market Desk", FindBlackMarketDesk, statusLabel) end
+_G.teleportToBankNode = function(statusLabel) SafeTeleportToLocation("Bank Node", function() return FindObject("bank") or FindObject("banknode") end, statusLabel) end
+_G.teleportToPoliceStation = function(statusLabel) SafeTeleportToLocation("Police Station", function() return FindObject("policestation") or FindObject("police") end, statusLabel) end
 
 -- ============================================
 -- COMPONENT BOX TELEPORTER GUI
@@ -1379,7 +1107,6 @@ end
 function createComponentBoxGUI()
     local TELEPORT_DELAY = 3
     local ABOVE_BOX_HEIGHT = 3
-    
     local isTeleporting = false
     local foundBoxes = {}
     local stopTeleport = false
@@ -1387,7 +1114,7 @@ function createComponentBoxGUI()
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "ComponentBoxTeleporter"
     screenGui.ResetOnSpawn = false
-    screenGui.Parent = game.CoreGui
+    screenGui.Parent = CoreGui
     
     local mainFrame = Instance.new("Frame")
     mainFrame.Size = UDim2.new(0, 320, 0, 240)
@@ -1405,7 +1132,7 @@ function createComponentBoxGUI()
     local titleBar = Instance.new("Frame")
     titleBar.Size = UDim2.new(1, 0, 0, 32)
     titleBar.Position = UDim2.new(0, 0, 0, 0)
-    titleBar.BackgroundColor3 = Colors.DarkPurple
+    titleBar.BackgroundColor3 = Colors.DarkCard
     titleBar.BorderSizePixel = 0
     titleBar.Name = "TitleBar"
     titleBar.Parent = mainFrame
@@ -1415,7 +1142,7 @@ function createComponentBoxGUI()
     titleCorner.Parent = titleBar
     
     local title = Instance.new("TextLabel")
-    title.Text = "COMPONENT BOX TELEPORTER"
+    title.Text = "📦 COMPONENT BOX"
     title.Size = UDim2.new(1, -40, 1, 0)
     title.Position = UDim2.new(0, 10, 0, 0)
     title.BackgroundTransparency = 1
@@ -1429,15 +1156,12 @@ function createComponentBoxGUI()
     closeButton.Size = UDim2.new(0, 24, 0, 24)
     closeButton.Position = UDim2.new(1, -30, 0.5, -12)
     closeButton.BackgroundColor3 = Colors.Error
-    closeButton.Text = "X"
+    closeButton.Text = "✕"
     closeButton.TextColor3 = Colors.Text
     closeButton.TextSize = 14
     closeButton.Font = Enum.Font.GothamBold
     closeButton.Parent = titleBar
-    
-    local closeCorner = Instance.new("UICorner")
-    closeCorner.CornerRadius = UDim.new(0, 4)
-    closeCorner.Parent = closeButton
+    local closeCorner = Instance.new("UICorner"); closeCorner.CornerRadius = UDim.new(0, 4); closeCorner.Parent = closeButton
     
     local contentFrame = Instance.new("Frame")
     contentFrame.Size = UDim2.new(1, -20, 1, -72)
@@ -1480,45 +1204,36 @@ function createComponentBoxGUI()
     currentPosLabel.Parent = contentFrame
     
     local toggleButton = Instance.new("TextButton")
-    toggleButton.Text = "START"
+    toggleButton.Text = "▶ START"
     toggleButton.Size = UDim2.new(0, 140, 0, 36)
     toggleButton.Position = UDim2.new(0.5, -70, 1, -50)
     toggleButton.AnchorPoint = Vector2.new(0.5, 1)
-    toggleButton.BackgroundColor3 = Colors.Component
+    toggleButton.BackgroundColor3 = Colors.Primary
     toggleButton.TextColor3 = Colors.Text
     toggleButton.Font = Enum.Font.GothamBold
     toggleButton.TextSize = 14
     toggleButton.AutoButtonColor = false
     toggleButton.Parent = mainFrame
+    local buttonCorner = Instance.new("UICorner"); buttonCorner.CornerRadius = UDim.new(0, 6); buttonCorner.Parent = toggleButton
     
-    local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 6)
-    buttonCorner.Parent = toggleButton
-    
-    -- Drag functionality
     local dragging = false
     local dragStartPos, frameStartPos
-    
     local function startDrag(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             dragStartPos = input.Position
             frameStartPos = mainFrame.Position
             input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
             end)
         end
     end
-    
     local function updateDrag(input)
         if dragging then
             local delta = input.Position - dragStartPos
             mainFrame.Position = UDim2.new(frameStartPos.X.Scale, frameStartPos.X.Offset + delta.X, frameStartPos.Y.Scale, frameStartPos.Y.Offset + delta.Y)
         end
     end
-    
     titleBar.InputBegan:Connect(startDrag)
     titleBar.InputChanged:Connect(updateDrag)
     
@@ -1530,45 +1245,30 @@ function createComponentBoxGUI()
     local function findComponentBoxes()
         local itemPickups = workspace.Game.Entities.ItemPickup:GetChildren()
         local foundItems = {}
-        
         for _, item in ipairs(itemPickups) do
             if item:GetAttribute("itemName") == "Component Box" then
                 local position = item:GetPivot().Position
-                table.insert(foundItems, {
-                    item = item,
-                    position = position + Vector3.new(0, ABOVE_BOX_HEIGHT, 0)
-                })
+                table.insert(foundItems, {item = item, position = position + Vector3.new(0, ABOVE_BOX_HEIGHT, 0)})
             end
         end
-        
         return foundItems
     end
     
     local function smoothTeleport(character, position)
-        if not character or not character:FindFirstChild("HumanoidRootPart") then
-            return false
-        end
-        
+        if not character or not character:FindFirstChild("HumanoidRootPart") then return false end
         local humanoidRootPart = character.HumanoidRootPart
         local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
         local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = CFrame.new(position)})
         tween:Play()
-        
         return true
     end
     
     local function teleportPlayerToBoxes(player)
-        if not player.Character then
-            player.CharacterAdded:Wait()
-        end
-        
+        if not player.Character then player.CharacterAdded:Wait() end
         for i, boxData in ipairs(foundBoxes) do
             if stopTeleport then break end
-            
             progressLabel.Text = string.format("Progress: %d/%d", i, #foundBoxes)
-            currentPosLabel.Text = string.format("Current position: %s\n(%.1f, %.1f, %.1f)", 
-                boxData.item.Name, boxData.position.X, boxData.position.Y, boxData.position.Z)
-            
+            currentPosLabel.Text = string.format("Position: %s\n(%.1f, %.1f, %.1f)", boxData.item.Name, boxData.position.X, boxData.position.Y, boxData.position.Z)
             if smoothTeleport(player.Character, boxData.position) then
                 local elapsed = 0
                 while elapsed < TELEPORT_DELAY and not stopTeleport do
@@ -1576,47 +1276,34 @@ function createComponentBoxGUI()
                 end
             end
         end
-        
         isTeleporting = false
         stopTeleport = false
-        toggleButton.Text = "START"
-        toggleButton.BackgroundColor3 = Colors.Component
-        
-        if not stopTeleport then
-            currentPosLabel.Text = "Teleportation completed!"
-        else
-            currentPosLabel.Text = "Teleportation stopped"
-        end
+        toggleButton.Text = "▶ START"
+        toggleButton.BackgroundColor3 = Colors.Primary
+        if not stopTeleport then currentPosLabel.Text = "Completed!" else currentPosLabel.Text = "Stopped" end
     end
     
     toggleButton.MouseButton1Click:Connect(function()
         if isTeleporting then
             stopTeleport = true
-            toggleButton.BackgroundColor3 = Colors.Component
+            toggleButton.BackgroundColor3 = Colors.Primary
             return
         end
-        
         isTeleporting = true
         stopTeleport = false
-        toggleButton.Text = "STOP"
+        toggleButton.Text = "⏹ STOP"
         toggleButton.BackgroundColor3 = Colors.Error
-        
         foundBoxes = findComponentBoxes()
         infoLabel.Text = string.format("Found boxes: %d", #foundBoxes)
-        
         if #foundBoxes == 0 then
             currentPosLabel.Text = "No boxes found!"
             isTeleporting = false
-            toggleButton.Text = "START"
-            toggleButton.BackgroundColor3 = Colors.Component
+            toggleButton.Text = "▶ START"
+            toggleButton.BackgroundColor3 = Colors.Primary
             return
         end
-        
         local player = LocalPlayer
-        
-        coroutine.wrap(function()
-            teleportPlayerToBoxes(player)
-        end)()
+        coroutine.wrap(function() teleportPlayerToBoxes(player) end)()
     end)
 end
 
@@ -1625,146 +1312,99 @@ end
 -- ============================================
 function teleportGunLocker()
     local lockers = workspace:FindFirstChild("Lockers")
-    if not lockers then
-        warn("Lockers folder not found")
-        return false
-    end
-    
+    if not lockers then warn("Lockers folder not found"); return false end
     local gunLocker = lockers:FindFirstChild("Gun Locker")
-    if not gunLocker then
-        warn("Gun Locker not found in Lockers")
-        return false
-    end
-    
+    if not gunLocker then warn("Gun Locker not found"); return false end
     local targetPosition = Vector3.new(978, 375, 447)
     local success = false
-    
     if gunLocker:IsA("Model") then
         local primaryPart = gunLocker.PrimaryPart or gunLocker:FindFirstChildWhichIsA("BasePart")
         if primaryPart then
             gunLocker:SetPrimaryPartCFrame(CFrame.new(targetPosition))
             success = true
-            print("Gun Locker teleported to " .. tostring(targetPosition))
+            print("Gun Locker teleported")
         else
             for _, part in ipairs(gunLocker:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.Position = targetPosition
-                    success = true
-                end
+                if part:IsA("BasePart") then part.Position = targetPosition; success = true end
             end
-            if success then
-                print("Gun Locker parts teleported to " .. tostring(targetPosition))
-            else
-                warn("Gun Locker has no movable parts")
-            end
+            if success then print("Gun Locker parts teleported") else warn("Gun Locker no movable parts") end
         end
     elseif gunLocker:IsA("BasePart") then
         gunLocker.Position = targetPosition
         success = true
-        print("Gun Locker teleported to " .. tostring(targetPosition))
+        print("Gun Locker teleported")
     else
-        warn("Gun Locker is not a Model or BasePart")
+        warn("Gun Locker not Model or BasePart")
     end
-    
     return success
 end
 
 function teleportWorkbench()
     local serverFurniture = workspace:FindFirstChild("ServerFurniture")
-    if not serverFurniture then
-        warn("ServerFurniture folder not found")
-        return false
-    end
-    
+    if not serverFurniture then warn("ServerFurniture not found"); return false end
     local targetModel = nil
-    local modelName = "Unknown"
-    
     for _, child in ipairs(serverFurniture:GetChildren()) do
         if child:IsA("Model") then
             local prompt = child:FindFirstChildWhichIsA("ProximityPrompt")
             if prompt and prompt.ObjectText == "Workbench" then
                 targetModel = child
-                modelName = child.Name
-                print("Found Workbench model: " .. modelName)
+                print("Found Workbench: " .. child.Name)
                 break
             end
         end
     end
-    
-    if not targetModel then
-        warn("Workbench model with ProximityPrompt not found in ServerFurniture")
-        return false
-    end
-    
+    if not targetModel then warn("Workbench not found"); return false end
     local targetPosition = Vector3.new(929, 376, 452)
     local success = false
-    
     if targetModel:IsA("Model") then
         local primaryPart = targetModel.PrimaryPart or targetModel:FindFirstChildWhichIsA("BasePart")
         if primaryPart then
             targetModel:SetPrimaryPartCFrame(CFrame.new(targetPosition))
             success = true
-            print(modelName .. " teleported to " .. tostring(targetPosition))
+            print("Workbench teleported")
         else
             local partsMoved = 0
             for _, part in ipairs(targetModel:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.Position = targetPosition
-                    partsMoved = partsMoved + 1
-                end
+                if part:IsA("BasePart") then part.Position = targetPosition; partsMoved = partsMoved + 1 end
             end
-            if partsMoved > 0 then
-                success = true
-                print(modelName .. " (" .. partsMoved .. " parts) teleported to " .. tostring(targetPosition))
-            else
-                warn(modelName .. " has no movable parts")
-            end
+            if partsMoved > 0 then success = true; print("Workbench (" .. partsMoved .. " parts) teleported") else warn("Workbench no movable parts") end
         end
     end
-    
     return success
 end
 
 -- ============================================
 -- BAN SYSTEM
 -- ============================================
-local bannedPlayers = {
-    "tenny_andEllisElijah",
-    "namewater67",
-    "DimaPersyk"
-}
-
+local bannedPlayers = {"tenny_andEllisElijah", "namewater67", "DimaPersyk"}
 if table.find(bannedPlayers, LocalPlayer.Name) then
     task.wait(1)
-    
     game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage", {
         Text = "[SYSTEM] You killed the creator of the script",
         Color = Color3.fromRGB(255, 50, 50),
         Font = Enum.Font.SourceSansBold,
         FontSize = Enum.FontSize.Size24
     })
-    
     task.wait(2)
     LocalPlayer:Kick("You killed the creator of the script")
     task.wait(1)
-    while true do
-        error("Script execution blocked for this player")
-    end
+    while true do error("Script execution blocked for this player") end
 end
 
 -- ============================================
--- MAIN GUI - PROFESSIONAL WITH CORNER MINIMIZE
+-- MAIN GUI - PugModsV1 (NUEVO DISEÑO)
 -- ============================================
 function createMainGUI()
     local MainGui = Instance.new("ScreenGui")
-    MainGui.Name = "IllicitHubGUI"
+    MainGui.Name = "PugModsV1"
     MainGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    MainGui.Parent = game.CoreGui
+    MainGui.Parent = CoreGui
 
+    -- Contenedor principal (más compacto)
     local MainContainer = Instance.new("Frame")
-    MainContainer.Size = UDim2.new(0, 380, 0, 720)
-    MainContainer.Position = UDim2.new(0, 20, 0, 20)
-    MainContainer.BackgroundColor3 = Colors.Surface
+    MainContainer.Size = UDim2.new(0, 340, 0, 500)
+    MainContainer.Position = UDim2.new(0.5, -170, 0.5, -250)
+    MainContainer.BackgroundColor3 = Colors.Background
     MainContainer.BackgroundTransparency = 0.05
     MainContainer.BorderSizePixel = 0
     MainContainer.Active = true
@@ -1772,7 +1412,7 @@ function createMainGUI()
     MainContainer.Parent = MainGui
 
     local MainCorner = Instance.new("UICorner")
-    MainCorner.CornerRadius = UDim.new(0, 20)
+    MainCorner.CornerRadius = UDim.new(0, 16)
     MainCorner.Parent = MainContainer
 
     -- Shadow
@@ -1782,995 +1422,511 @@ function createMainGUI()
     MainShadow.ImageTransparency = 0.6
     MainShadow.ScaleType = Enum.ScaleType.Slice
     MainShadow.SliceCenter = Rect.new(49, 49, 450, 450)
-    MainShadow.Size = UDim2.new(1, 40, 1, 40)
-    MainShadow.Position = UDim2.new(0, -20, 0, -20)
+    MainShadow.Size = UDim2.new(1, 30, 1, 30)
+    MainShadow.Position = UDim2.new(0, -15, 0, -15)
     MainShadow.BackgroundTransparency = 1
     MainShadow.Parent = MainContainer
 
-    -- Header
-    local MainHeader = Instance.new("Frame")
-    MainHeader.Size = UDim2.new(1, 0, 0, 70)
-    MainHeader.BackgroundColor3 = Colors.Primary
-    MainHeader.BorderSizePixel = 0
-    MainHeader.Parent = MainContainer
+    -- HEADER (barra superior)
+    local Header = Instance.new("Frame")
+    Header.Size = UDim2.new(1, 0, 0, 50)
+    Header.BackgroundColor3 = Colors.DarkCard
+    Header.BorderSizePixel = 0
+    Header.Parent = MainContainer
 
     local HeaderCorner = Instance.new("UICorner")
-    HeaderCorner.CornerRadius = UDim.new(0, 20)
-    HeaderCorner.Parent = MainHeader
+    HeaderCorner.CornerRadius = UDim.new(0, 16)
+    HeaderCorner.Parent = Header
 
     local HeaderGradient = Instance.new("UIGradient")
     HeaderGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Colors.Primary),
-        ColorSequenceKeypoint.new(1, Colors.AccentLight)
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 160, 230)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 200, 255))
     })
-    HeaderGradient.Rotation = 45
-    HeaderGradient.Parent = MainHeader
+    HeaderGradient.Rotation = 90
+    HeaderGradient.Parent = Header
 
-    -- Header Title
-    local HeaderTitle = Instance.new("TextLabel")
-    HeaderTitle.Size = UDim2.new(1, -80, 0, 40)
-    HeaderTitle.Position = UDim2.new(0, 15, 0, 10)
-    HeaderTitle.BackgroundTransparency = 1
-    HeaderTitle.Text = "ILLICIT HUB"
-    HeaderTitle.TextColor3 = Colors.Text
-    HeaderTitle.TextSize = 22
-    HeaderTitle.Font = Enum.Font.GothamBlack
-    HeaderTitle.TextXAlignment = Enum.TextXAlignment.Left
-    HeaderTitle.Parent = MainHeader
+    -- Título
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(1, -80, 1, 0)
+    Title.Position = UDim2.new(0, 14, 0, 0)
+    Title.BackgroundTransparency = 1
+    Title.Text = "PugMods V1"
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextSize = 20
+    Title.Font = Enum.Font.GothamBlack
+    Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.Parent = Header
 
-    local HeaderSubtitle = Instance.new("TextLabel")
-    HeaderSubtitle.Size = UDim2.new(1, -80, 0, 20)
-    HeaderSubtitle.Position = UDim2.new(0, 15, 0, 45)
-    HeaderSubtitle.BackgroundTransparency = 1
-    HeaderSubtitle.Text = "Owner: " .. SCRIPT_OWNER
-    HeaderSubtitle.TextColor3 = Colors.TextSecondary
-    HeaderSubtitle.TextSize = 11
-    HeaderSubtitle.Font = Enum.Font.Gotham
-    HeaderSubtitle.TextXAlignment = Enum.TextXAlignment.Left
-    HeaderSubtitle.Parent = MainHeader
+    -- Subtítulo (owner)
+    local Subtitle = Instance.new("TextLabel")
+    Subtitle.Size = UDim2.new(1, -80, 0, 16)
+    Subtitle.Position = UDim2.new(0, 14, 0, 30)
+    Subtitle.BackgroundTransparency = 1
+    Subtitle.Text = "by " .. SCRIPT_OWNER
+    Subtitle.TextColor3 = Color3.fromRGB(200, 210, 255)
+    Subtitle.TextSize = 10
+    Subtitle.Font = Enum.Font.Gotham
+    Subtitle.TextXAlignment = Enum.TextXAlignment.Left
+    Subtitle.Parent = Header
 
-    -- CORNER MINIMIZE BUTTON (esquina superior derecha)
-    local CornerMinimizeButton = Instance.new("TextButton")
-    CornerMinimizeButton.Size = UDim2.new(0, 28, 0, 28)
-    CornerMinimizeButton.Position = UDim2.new(1, -70, 0, 8)
-    CornerMinimizeButton.BackgroundColor3 = Colors.DarkPurple
-    CornerMinimizeButton.Text = "−"
-    CornerMinimizeButton.TextColor3 = Colors.Text
-    CornerMinimizeButton.TextSize = 18
-    CornerMinimizeButton.Font = Enum.Font.GothamBold
-    CornerMinimizeButton.Parent = MainHeader
+    -- BOTÓN CLOSE ALL GUIS (esquina superior derecha)
+    local CloseAllButton = Instance.new("TextButton")
+    CloseAllButton.Size = UDim2.new(0, 28, 0, 28)
+    CloseAllButton.Position = UDim2.new(1, -36, 0, 10)
+    CloseAllButton.BackgroundColor3 = Colors.Error
+    CloseAllButton.Text = "✕"
+    CloseAllButton.TextColor3 = Colors.Text
+    CloseAllButton.TextSize = 14
+    CloseAllButton.Font = Enum.Font.GothamBold
+    CloseAllButton.Parent = Header
+    local CloseAllCorner = Instance.new("UICorner"); CloseAllCorner.CornerRadius = UDim.new(0, 6); CloseAllCorner.Parent = CloseAllButton
+    
+    CloseAllButton.MouseButton1Click:Connect(function()
+        closeAllGuis()
+    end)
 
-    local CornerCloseButton = Instance.new("TextButton")
-    CornerCloseButton.Size = UDim2.new(0, 28, 0, 28)
-    CornerCloseButton.Position = UDim2.new(1, -38, 0, 8)
-    CornerCloseButton.BackgroundColor3 = Colors.Error
-    CornerCloseButton.Text = "✕"
-    CornerCloseButton.TextColor3 = Colors.Text
-    CornerCloseButton.TextSize = 16
-    CornerCloseButton.Font = Enum.Font.GothamBold
-    CornerCloseButton.Parent = MainHeader
-
-    local ControlCorner = Instance.new("UICorner")
-    ControlCorner.CornerRadius = UDim.new(0, 6)
-    ControlCorner.Parent = CornerMinimizeButton
-    ControlCorner:Clone().Parent = CornerCloseButton
-
-    -- Content Area
-    local ContentFrame = Instance.new("ScrollingFrame")
-    ContentFrame.Size = UDim2.new(1, 0, 1, -70)
-    ContentFrame.Position = UDim2.new(0, 0, 0, 70)
-    ContentFrame.BackgroundTransparency = 1
-    ContentFrame.BorderSizePixel = 0
-    ContentFrame.ScrollBarThickness = 4
-    ContentFrame.ScrollBarImageColor3 = Colors.Primary
-    ContentFrame.CanvasSize = UDim2.new(0, 0, 0, 2400)
-    ContentFrame.Parent = MainContainer
+    -- Botón minimizar (esquina superior izquierda dentro del header)
+    local MinimizeButton = Instance.new("TextButton")
+    MinimizeButton.Size = UDim2.new(0, 28, 0, 28)
+    MinimizeButton.Position = UDim2.new(0, 8, 0, 10)
+    MinimizeButton.BackgroundColor3 = Colors.SurfaceLight
+    MinimizeButton.Text = "−"
+    MinimizeButton.TextColor3 = Colors.Text
+    MinimizeButton.TextSize = 18
+    MinimizeButton.Font = Enum.Font.GothamBold
+    MinimizeButton.Parent = Header
+    local MinCorner = Instance.new("UICorner"); MinCorner.CornerRadius = UDim.new(0, 6); MinCorner.Parent = MinimizeButton
 
     -- ============================================
-    -- UI CREATION HELPERS
+    -- SCROLLING FRAME MEJORADO
     -- ============================================
-    local function createModernSection(title, yPosition)
-        local section = Instance.new("Frame")
-        section.Size = UDim2.new(1, -20, 0, 32)
-        section.Position = UDim2.new(0, 10, 0, yPosition)
-        section.BackgroundColor3 = Colors.SurfaceLight
-        section.BorderSizePixel = 0
-        section.Parent = ContentFrame
-        
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 10)
-        corner.Parent = section
+    local ScrollFrame = Instance.new("ScrollingFrame")
+    ScrollFrame.Size = UDim2.new(1, -12, 1, -60)
+    ScrollFrame.Position = UDim2.new(0, 6, 0, 55)
+    ScrollFrame.BackgroundTransparency = 1
+    ScrollFrame.BorderSizePixel = 0
+    ScrollFrame.ScrollBarThickness = 4
+    ScrollFrame.ScrollBarImageColor3 = Colors.Primary
+    ScrollFrame.ScrollBarImageTransparency = 0.5
+    ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    ScrollFrame.Parent = MainContainer
+    ScrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+    local CanvasLayout = Instance.new("UIListLayout")
+    CanvasLayout.Padding = UDim.new(0, 6)
+    CanvasLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    CanvasLayout.Parent = ScrollFrame
+
+    -- ============================================
+    -- FUNCIONES UI MODERNAS
+    -- ============================================
+    local function createCategory(title)
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(1, -8, 0, 28)
+        frame.BackgroundColor3 = Colors.SurfaceLight
+        frame.BorderSizePixel = 0
+        frame.Parent = ScrollFrame
+        local corner = Instance.new("UICorner"); corner.CornerRadius = UDim.new(0, 6); corner.Parent = frame
         
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, -20, 1, 0)
-        label.Position = UDim2.new(0, 12, 0, 0)
+        label.Size = UDim2.new(1, -12, 1, 0)
+        label.Position = UDim2.new(0, 8, 0, 0)
         label.BackgroundTransparency = 1
         label.Text = title
         label.TextColor3 = Colors.Text
-        label.TextSize = 13
+        label.TextSize = 12
         label.Font = Enum.Font.GothamBold
         label.TextXAlignment = Enum.TextXAlignment.Left
-        label.Parent = section
+        label.Parent = frame
         
-        return section
+        return frame
     end
 
-    local function createModernButton(text, yPosition, callback, color)
-        local button = Instance.new("TextButton")
-        button.Size = UDim2.new(1, -20, 0, 36)
-        button.Position = UDim2.new(0, 10, 0, yPosition)
-        button.BackgroundColor3 = color or Colors.Primary
-        button.Text = text
-        button.TextColor3 = Colors.Text
-        button.TextSize = 12
-        button.Font = Enum.Font.GothamBold
-        button.Parent = ContentFrame
+    local function createButton(text, callback, color)
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, -8, 0, 32)
+        btn.BackgroundColor3 = color or Colors.Primary
+        btn.Text = text
+        btn.TextColor3 = Colors.Text
+        btn.TextSize = 12
+        btn.Font = Enum.Font.GothamBold
+        btn.AutoButtonColor = false
+        btn.Parent = ScrollFrame
+        local corner = Instance.new("UICorner"); corner.CornerRadius = UDim.new(0, 6); corner.Parent = btn
         
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 8)
-        corner.Parent = button
-        
-        local function createButtonEffect(btn)
-            local originalColor = btn.BackgroundColor3
-            
-            btn.MouseEnter:Connect(function()
-                TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                    BackgroundColor3 = Color3.fromRGB(
-                        math.min(originalColor.R * 255 + 20, 255),
-                        math.min(originalColor.G * 255 + 20, 255),
-                        math.min(originalColor.B * 255 + 20, 255)
-                    ) / 255
-                }):Play()
-            end)
-            
-            btn.MouseLeave:Connect(function()
-                TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                    BackgroundColor3 = originalColor
-                }):Play()
-            end)
+        local function hover(e)
+            if e then
+                TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(
+                    math.min(btn.BackgroundColor3.R*255 + 25, 255),
+                    math.min(btn.BackgroundColor3.G*255 + 25, 255),
+                    math.min(btn.BackgroundColor3.B*255 + 25, 255)
+                )}):Play()
+            else
+                TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = color or Colors.Primary}):Play()
+            end
         end
-        
-        createButtonEffect(button)
-        button.MouseButton1Click:Connect(callback)
-        
-        return button
+        btn.MouseEnter:Connect(function() hover(true) end)
+        btn.MouseLeave:Connect(function() hover(false) end)
+        btn.MouseButton1Click:Connect(callback)
+        return btn
     end
 
-    local function createModernToggle(text, yPosition, callback, defaultState)
-        local toggle = Instance.new("Frame")
-        toggle.Size = UDim2.new(1, -20, 0, 36)
-        toggle.Position = UDim2.new(0, 10, 0, yPosition)
-        toggle.BackgroundColor3 = Colors.SurfaceLight
-        toggle.BorderSizePixel = 0
-        toggle.Parent = ContentFrame
-        
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 8)
-        corner.Parent = toggle
+    local function createToggle(text, callback, defaultState)
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(1, -8, 0, 32)
+        frame.BackgroundColor3 = Colors.SurfaceLight
+        frame.BorderSizePixel = 0
+        frame.Parent = ScrollFrame
+        local corner = Instance.new("UICorner"); corner.CornerRadius = UDim.new(0, 6); corner.Parent = frame
         
         local label = Instance.new("TextLabel")
         label.Size = UDim2.new(0.7, 0, 1, 0)
-        label.Position = UDim2.new(0, 12, 0, 0)
+        label.Position = UDim2.new(0, 10, 0, 0)
         label.BackgroundTransparency = 1
         label.Text = text
         label.TextColor3 = Colors.Text
-        label.TextSize = 12
-        label.Font = Enum.Font.Gotham
-        label.TextXAlignment = Enum.TextXAlignment.Left
-        label.Parent = toggle
-        
-        local toggleButton = Instance.new("TextButton")
-        toggleButton.Size = UDim2.new(0, 45, 0, 22)
-        toggleButton.Position = UDim2.new(1, -52, 0.5, -11)
-        toggleButton.BackgroundColor3 = Colors.Error
-        toggleButton.Text = ""
-        toggleButton.Parent = toggle
-        
-        local toggleCorner = Instance.new("UICorner")
-        toggleCorner.CornerRadius = UDim.new(1, 0)
-        toggleCorner.Parent = toggleButton
-        
-        local toggleDot = Instance.new("Frame")
-        toggleDot.Size = UDim2.new(0, 16, 0, 16)
-        toggleDot.Position = UDim2.new(0, 3, 0, 3)
-        toggleDot.BackgroundColor3 = Colors.Text
-        toggleDot.BorderSizePixel = 0
-        toggleDot.Parent = toggleButton
-        
-        local dotCorner = Instance.new("UICorner")
-        dotCorner.CornerRadius = UDim.new(1, 0)
-        dotCorner.Parent = toggleDot
-        
-        local isToggled = defaultState or false
-        
-        local function updateToggle()
-            if isToggled then
-                TweenService:Create(toggleButton, TweenInfo.new(0.2), {
-                    BackgroundColor3 = Colors.Success
-                }):Play()
-                TweenService:Create(toggleDot, TweenInfo.new(0.2), {
-                    Position = UDim2.new(0, 26, 0, 3)
-                }):Play()
-            else
-                TweenService:Create(toggleButton, TweenInfo.new(0.2), {
-                    BackgroundColor3 = Colors.Error
-                }):Play()
-                TweenService:Create(toggleDot, TweenInfo.new(0.2), {
-                    Position = UDim2.new(0, 3, 0, 3)
-                }):Play()
-            end
-            if callback then callback(isToggled) end
-        end
-        
-        toggleButton.MouseButton1Click:Connect(function()
-            isToggled = not isToggled
-            updateToggle()
-        end)
-        
-        updateToggle()
-        return toggle
-    end
-
-    local function createModernLabel(text, yPosition, color)
-        local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, -20, 0, 22)
-        label.Position = UDim2.new(0, 10, 0, yPosition)
-        label.BackgroundTransparency = 1
-        label.Text = text
-        label.TextColor3 = color or Colors.TextSecondary
         label.TextSize = 11
         label.Font = Enum.Font.Gotham
         label.TextXAlignment = Enum.TextXAlignment.Left
-        label.Parent = ContentFrame
-        return label
-    end
-
-    -- ============================================
-    -- SLIDER FUNCTIONS
-    -- ============================================
-    local function createHealthSlider(yPosition)
-        local sliderFrame = Instance.new("Frame")
-        sliderFrame.Size = UDim2.new(1, -20, 0, 50)
-        sliderFrame.Position = UDim2.new(0, 10, 0, yPosition)
-        sliderFrame.BackgroundColor3 = Colors.SurfaceLight
-        sliderFrame.BorderSizePixel = 0
-        sliderFrame.Parent = ContentFrame
+        label.Parent = frame
         
-        local sliderCorner = Instance.new("UICorner")
-        sliderCorner.CornerRadius = UDim.new(0, 8)
-        sliderCorner.Parent = sliderFrame
+        local toggleBtn = Instance.new("TextButton")
+        toggleBtn.Size = UDim2.new(0, 40, 0, 20)
+        toggleBtn.Position = UDim2.new(1, -46, 0.5, -10)
+        toggleBtn.BackgroundColor3 = Colors.Error
+        toggleBtn.Text = ""
+        toggleBtn.Parent = frame
+        local toggleCorner = Instance.new("UICorner"); toggleCorner.CornerRadius = UDim.new(1, 0); toggleCorner.Parent = toggleBtn
         
-        local titleLabel = Instance.new("TextLabel")
-        titleLabel.Size = UDim2.new(1, -20, 0, 20)
-        titleLabel.Position = UDim2.new(0, 10, 0, 5)
-        titleLabel.BackgroundTransparency = 1
-        titleLabel.Text = "Health Threshold"
-        titleLabel.TextColor3 = Colors.Text
-        titleLabel.TextSize = 12
-        titleLabel.Font = Enum.Font.GothamBold
-        titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-        titleLabel.Parent = sliderFrame
+        local dot = Instance.new("Frame")
+        dot.Size = UDim2.new(0, 14, 0, 14)
+        dot.Position = UDim2.new(0, 3, 0, 3)
+        dot.BackgroundColor3 = Colors.Text
+        dot.BorderSizePixel = 0
+        dot.Parent = toggleBtn
+        local dotCorner = Instance.new("UICorner"); dotCorner.CornerRadius = UDim.new(1, 0); dotCorner.Parent = dot
         
-        local valueLabel = Instance.new("TextLabel")
-        valueLabel.Size = UDim2.new(0.4, 0, 0, 20)
-        valueLabel.Position = UDim2.new(0.6, 0, 0, 5)
-        valueLabel.BackgroundTransparency = 1
-        valueLabel.Text = "20 HP"
-        valueLabel.TextColor3 = Colors.Warning
-        valueLabel.TextSize = 11
-        valueLabel.Font = Enum.Font.GothamBold
-        valueLabel.TextXAlignment = Enum.TextXAlignment.Right
-        valueLabel.Parent = sliderFrame
+        local isOn = defaultState or false
         
-        local trackFrame = Instance.new("Frame")
-        trackFrame.Size = UDim2.new(1, -20, 0, 15)
-        trackFrame.Position = UDim2.new(0, 10, 0, 30)
-        trackFrame.BackgroundColor3 = Colors.DeepPurple
-        trackFrame.BorderSizePixel = 0
-        trackFrame.Parent = sliderFrame
-        
-        local trackCorner = Instance.new("UICorner")
-        trackCorner.CornerRadius = UDim.new(0, 8)
-        trackCorner.Parent = trackFrame
-        
-        local fillFrame = Instance.new("Frame")
-        fillFrame.Size = UDim2.new(0.2, 0, 1, 0)
-        fillFrame.Position = UDim2.new(0, 0, 0, 0)
-        fillFrame.BackgroundColor3 = Colors.Warning
-        fillFrame.BorderSizePixel = 0
-        fillFrame.Parent = trackFrame
-        
-        local fillCorner = Instance.new("UICorner")
-        fillCorner.CornerRadius = UDim.new(0, 8)
-        fillCorner.Parent = fillFrame
-        
-        local thumbFrame = Instance.new("Frame")
-        thumbFrame.Size = UDim2.new(0, 20, 0, 20)
-        thumbFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-        thumbFrame.Position = UDim2.new(0.2, 0, 0.5, 0)
-        thumbFrame.BackgroundColor3 = Colors.Text
-        thumbFrame.BorderSizePixel = 0
-        thumbFrame.ZIndex = 2
-        thumbFrame.Parent = trackFrame
-        
-        local thumbCorner = Instance.new("UICorner")
-        thumbCorner.CornerRadius = UDim.new(0, 10)
-        thumbCorner.Parent = thumbFrame
-        
-        local currentValue = 20
-        local isDragging = false
-        
-        local function updateSliderValue(value)
-            currentValue = math.clamp(math.floor(value), 1, 100)
-            local fillAmount = currentValue / 100
-            
-            fillFrame.Size = UDim2.new(fillAmount, 0, 1, 0)
-            thumbFrame.Position = UDim2.new(fillAmount, 0, 0.5, 0)
-            valueLabel.Text = currentValue .. " HP"
-            
-            if currentValue <= 15 then
-                valueLabel.TextColor3 = Colors.Error
-                fillFrame.BackgroundColor3 = Colors.Error
-            elseif currentValue <= 30 then
-                valueLabel.TextColor3 = Colors.Warning
-                fillFrame.BackgroundColor3 = Colors.Warning
+        local function update()
+            if isOn then
+                TweenService:Create(toggleBtn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.Success}):Play()
+                TweenService:Create(dot, TweenInfo.new(0.2), {Position = UDim2.new(0, 23, 0, 3)}):Play()
             else
-                valueLabel.TextColor3 = Colors.Success
-                fillFrame.BackgroundColor3 = Colors.Success
+                TweenService:Create(toggleBtn, TweenInfo.new(0.2), {BackgroundColor3 = Colors.Error}):Play()
+                TweenService:Create(dot, TweenInfo.new(0.2), {Position = UDim2.new(0, 3, 0, 3)}):Play()
             end
-            
-            _G.setHealthThreshold(currentValue)
+            if callback then callback(isOn) end
         end
         
-        local function updateFromMouse()
-            if not isDragging then return end
-            
-            local mousePos = UserInputService:GetMouseLocation()
-            local trackAbsolutePos = trackFrame.AbsolutePosition
-            local trackAbsoluteSize = trackFrame.AbsoluteSize
-            
-            local relativeX = (mousePos.X - trackAbsolutePos.X) / trackAbsoluteSize.X
-            relativeX = math.clamp(relativeX, 0, 1)
-            
-            local newValue = math.floor(relativeX * 100)
-            updateSliderValue(newValue)
-        end
-        
-        trackFrame.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                isDragging = true
-                updateFromMouse()
-            end
+        toggleBtn.MouseButton1Click:Connect(function()
+            isOn = not isOn
+            update()
         end)
-        
-        trackFrame.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                isDragging = false
-            end
-        end)
-        
-        thumbFrame.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                isDragging = true
-            end
-        end)
-        
-        thumbFrame.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                isDragging = false
-            end
-        end)
-        
-        UserInputService.InputChanged:Connect(function(input)
-            if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-                updateFromMouse()
-            end
-        end)
-        
-        return sliderFrame
+        update()
+        return frame
     end
 
-    local function createTPWalkSlider(yPosition)
-        local sliderFrame = Instance.new("Frame")
-        sliderFrame.Size = UDim2.new(1, -20, 0, 50)
-        sliderFrame.Position = UDim2.new(0, 10, 0, yPosition)
-        sliderFrame.BackgroundColor3 = Colors.SurfaceLight
-        sliderFrame.BorderSizePixel = 0
-        sliderFrame.Parent = ContentFrame
+    local function createLabel(text, color)
+        local lbl = Instance.new("TextLabel")
+        lbl.Size = UDim2.new(1, -8, 0, 18)
+        lbl.BackgroundTransparency = 1
+        lbl.Text = text
+        lbl.TextColor3 = color or Colors.TextSecondary
+        lbl.TextSize = 10
+        lbl.Font = Enum.Font.Gotham
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.Parent = ScrollFrame
+        return lbl
+    end
+
+    local function createSlider(text, minVal, maxVal, defaultVal, callback, valueSuffix)
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(1, -8, 0, 44)
+        frame.BackgroundColor3 = Colors.SurfaceLight
+        frame.BorderSizePixel = 0
+        frame.Parent = ScrollFrame
+        local corner = Instance.new("UICorner"); corner.CornerRadius = UDim.new(0, 6); corner.Parent = frame
         
-        local sliderCorner = Instance.new("UICorner")
-        sliderCorner.CornerRadius = UDim.new(0, 8)
-        sliderCorner.Parent = sliderFrame
-        
-        local titleLabel = Instance.new("TextLabel")
-        titleLabel.Size = UDim2.new(1, -20, 0, 20)
-        titleLabel.Position = UDim2.new(0, 10, 0, 5)
-        titleLabel.BackgroundTransparency = 1
-        titleLabel.Text = "TPWalk Speed"
-        titleLabel.TextColor3 = Colors.Text
-        titleLabel.TextSize = 12
-        titleLabel.Font = Enum.Font.GothamBold
-        titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-        titleLabel.Parent = sliderFrame
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(0.6, 0, 0, 16)
+        label.Position = UDim2.new(0, 8, 0, 2)
+        label.BackgroundTransparency = 1
+        label.Text = text
+        label.TextColor3 = Colors.Text
+        label.TextSize = 10
+        label.Font = Enum.Font.GothamBold
+        label.TextXAlignment = Enum.TextXAlignment.Left
+        label.Parent = frame
         
         local valueLabel = Instance.new("TextLabel")
-        valueLabel.Size = UDim2.new(0.4, 0, 0, 20)
-        valueLabel.Position = UDim2.new(0.6, 0, 0, 5)
+        valueLabel.Size = UDim2.new(0.35, 0, 0, 16)
+        valueLabel.Position = UDim2.new(0.6, 0, 0, 2)
         valueLabel.BackgroundTransparency = 1
-        valueLabel.Text = tpwalkSpeed .. " units"
+        valueLabel.Text = tostring(defaultVal) .. (valueSuffix or "")
         valueLabel.TextColor3 = Colors.AccentLight
-        valueLabel.TextSize = 11
+        valueLabel.TextSize = 10
         valueLabel.Font = Enum.Font.GothamBold
         valueLabel.TextXAlignment = Enum.TextXAlignment.Right
-        valueLabel.Parent = sliderFrame
+        valueLabel.Parent = frame
         
-        local trackFrame = Instance.new("Frame")
-        trackFrame.Size = UDim2.new(1, -20, 0, 15)
-        trackFrame.Position = UDim2.new(0, 10, 0, 30)
-        trackFrame.BackgroundColor3 = Colors.DeepPurple
-        trackFrame.BorderSizePixel = 0
-        trackFrame.Parent = sliderFrame
+        local track = Instance.new("Frame")
+        track.Size = UDim2.new(1, -16, 0, 12)
+        track.Position = UDim2.new(0, 8, 0, 26)
+        track.BackgroundColor3 = Colors.DarkCard
+        track.BorderSizePixel = 0
+        track.Parent = frame
+        local trackCorner = Instance.new("UICorner"); trackCorner.CornerRadius = UDim.new(0, 6); trackCorner.Parent = track
         
-        local trackCorner = Instance.new("UICorner")
-        trackCorner.CornerRadius = UDim.new(0, 8)
-        trackCorner.Parent = trackFrame
+        local fill = Instance.new("Frame")
+        fill.Size = UDim2.new((defaultVal - minVal) / (maxVal - minVal), 0, 1, 0)
+        fill.BackgroundColor3 = Colors.Primary
+        fill.BorderSizePixel = 0
+        fill.Parent = track
+        local fillCorner = Instance.new("UICorner"); fillCorner.CornerRadius = UDim.new(0, 6); fillCorner.Parent = fill
         
-        local fillFrame = Instance.new("Frame")
-        fillFrame.Size = UDim2.new((tpwalkSpeed - 10) / 90, 0, 1, 0)
-        fillFrame.Position = UDim2.new(0, 0, 0, 0)
-        fillFrame.BackgroundColor3 = Colors.AccentLight
-        fillFrame.BorderSizePixel = 0
-        fillFrame.Parent = trackFrame
+        local thumb = Instance.new("Frame")
+        thumb.Size = UDim2.new(0, 16, 0, 16)
+        thumb.AnchorPoint = Vector2.new(0.5, 0.5)
+        thumb.Position = UDim2.new((defaultVal - minVal) / (maxVal - minVal), 0, 0.5, 0)
+        thumb.BackgroundColor3 = Colors.Text
+        thumb.BorderSizePixel = 0
+        thumb.ZIndex = 2
+        thumb.Parent = track
+        local thumbCorner = Instance.new("UICorner"); thumbCorner.CornerRadius = UDim.new(0, 8); thumbCorner.Parent = thumb
         
-        local fillCorner = Instance.new("UICorner")
-        fillCorner.CornerRadius = UDim.new(0, 8)
-        fillCorner.Parent = fillFrame
-        
-        local thumbFrame = Instance.new("Frame")
-        thumbFrame.Size = UDim2.new(0, 20, 0, 20)
-        thumbFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-        thumbFrame.Position = UDim2.new((tpwalkSpeed - 10) / 90, 0, 0.5, 0)
-        thumbFrame.BackgroundColor3 = Colors.Text
-        thumbFrame.BorderSizePixel = 0
-        thumbFrame.ZIndex = 2
-        thumbFrame.Parent = trackFrame
-        
-        local thumbCorner = Instance.new("UICorner")
-        thumbCorner.CornerRadius = UDim.new(0, 10)
-        thumbCorner.Parent = thumbFrame
-        
+        local currentVal = defaultVal
         local isDragging = false
         
-        local function updateSliderValue(value)
-            local newSpeed = math.clamp(math.floor(value), 10, 100)
-            tpwalkSpeed = newSpeed
-            local fillAmount = (newSpeed - 10) / 90
-            
-            fillFrame.Size = UDim2.new(fillAmount, 0, 1, 0)
-            thumbFrame.Position = UDim2.new(fillAmount, 0, 0.5, 0)
-            valueLabel.Text = newSpeed .. " units"
-            
-            _G.setTPWalkSpeed(newSpeed)
+        local function updateSlider(value)
+            currentVal = math.clamp(value, minVal, maxVal)
+            local fillAmount = (currentVal - minVal) / (maxVal - minVal)
+            fill.Size = UDim2.new(fillAmount, 0, 1, 0)
+            thumb.Position = UDim2.new(fillAmount, 0, 0.5, 0)
+            valueLabel.Text = tostring(math.floor(currentVal)) .. (valueSuffix or "")
+            if callback then callback(currentVal) end
         end
         
         local function updateFromMouse()
             if not isDragging then return end
-            
             local mousePos = UserInputService:GetMouseLocation()
-            local trackAbsolutePos = trackFrame.AbsolutePosition
-            local trackAbsoluteSize = trackFrame.AbsoluteSize
-            
-            local relativeX = (mousePos.X - trackAbsolutePos.X) / trackAbsoluteSize.X
-            relativeX = math.clamp(relativeX, 0, 1)
-            
-            local newValue = math.floor(10 + relativeX * 90)
-            updateSliderValue(newValue)
+            local trackAbsPos = track.AbsolutePosition
+            local trackAbsSize = track.AbsoluteSize
+            local relativeX = math.clamp((mousePos.X - trackAbsPos.X) / trackAbsSize.X, 0, 1)
+            local newVal = minVal + relativeX * (maxVal - minVal)
+            updateSlider(newVal)
         end
         
-        trackFrame.InputBegan:Connect(function(input)
+        track.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
                 isDragging = true
                 updateFromMouse()
             end
         end)
-        
-        trackFrame.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                isDragging = false
-            end
+        track.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then isDragging = false end
         end)
-        
-        thumbFrame.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                isDragging = true
-            end
+        thumb.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then isDragging = true end
         end)
-        
-        thumbFrame.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                isDragging = false
-            end
+        thumb.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then isDragging = false end
         end)
-        
         UserInputService.InputChanged:Connect(function(input)
             if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
                 updateFromMouse()
             end
         end)
         
-        return sliderFrame
+        return frame
     end
 
     -- ============================================
-    -- BUILD GUI
+    -- CONSTRUCCIÓN DEL MENÚ
     -- ============================================
-    local currentY = 10
+    
+    -- Item Teleport
+    createCategory("📦 ITEM TELEPORT")
+    itemStatus = createLabel("Status: Ready")
+    createButton("▶ START ITEM TP", function() _G.startItemTeleport(itemStatus) end, Colors.Success)
+    createButton("⏹ STOP ITEM TP", function() _G.stopItemTeleport() end, Colors.Error)
 
-    -- Item Teleport Section
-    createModernSection("ITEM TELEPORT", currentY)
-    currentY = currentY + 42
-    itemStatus = createModernLabel("Status: Ready to start", currentY)
-    currentY = currentY + 27
-    createModernButton("START ITEM TELEPORT", currentY, function() _G.startItemTeleport(itemStatus) end, Colors.Success)
-    currentY = currentY + 41
-    createModernButton("STOP ITEM TELEPORT", currentY, function() _G.stopItemTeleport() end, Colors.Error)
-    currentY = currentY + 46
+    -- Chest Cycle
+    createCategory("📦 CHEST & SAFE CYCLE")
+    chestStatus = createLabel("Status: Ready")
+    createButton("▶ START CHEST CYCLE", function() _G.startChestCycle(chestStatus) end, Colors.Warning)
+    createButton("⏹ STOP CHEST CYCLE", function() _G.stopChestCycle() end, Colors.Error)
 
-    -- Chest Cycle Section
-    createModernSection("CHEST & SAFE CYCLE", currentY)
-    currentY = currentY + 42
-    chestStatus = createModernLabel("Status: Ready", currentY)
-    currentY = currentY + 27
-    createModernButton("START CHEST CYCLE", currentY, function() _G.startChestCycle(chestStatus) end, Colors.Warning)
-    currentY = currentY + 41
-    createModernButton("STOP CHEST CYCLE", currentY, function() _G.stopChestCycle() end, Colors.Error)
-    currentY = currentY + 46
+    -- Bank Cash
+    createCategory("💰 BANK CASH")
+    bankStatus = createLabel("Status: Checking...")
+    createButton("💵 TP TO BANKCASH", function() _G.teleportToBankCash(bankStatus) end, Colors.Primary)
+    createToggle("Auto TP BankCash", function(state) _G.toggleBankAuto(state, bankStatus) end, false)
 
-    -- Bank Cash Section
-    createModernSection("BANK CASH TELEPORT", currentY)
-    currentY = currentY + 42
-    bankStatus = createModernLabel("Status: Checking...", currentY)
-    currentY = currentY + 27
-    createModernButton("TELEPORT TO BANKCASH", currentY, function() _G.teleportToBankCash(bankStatus) end, Colors.Primary)
-    currentY = currentY + 41
-    createModernToggle("AUTO TELEPORT TO BANKCASH", currentY, function(state) _G.toggleBankAuto(state, bankStatus) end, false)
-    currentY = currentY + 46
+    -- Health Auto TP
+    createCategory("❤️ HEALTH AUTO TP")
+    healthStatus = createLabel("Status: Disabled")
+    healthValue = createLabel("HP: --")
+    createSlider("Threshold", 1, 100, 20, function(val) _G.setHealthThreshold(val) end, " HP")
+    createButton("📍 MANUAL TP", function() _G.manualHealthTeleport(healthStatus, healthValue) end, Colors.Primary)
+    createToggle("Auto Health TP", function(state) _G.toggleHealthAuto(state, healthStatus, healthValue) end, false)
 
-    -- Health Teleport Section
-    createModernSection("HEALTH AUTO TELEPORT", currentY)
-    currentY = currentY + 42
-    healthStatus = createModernLabel("Status: Disabled", currentY)
-    currentY = currentY + 27
-    healthValue = createModernLabel("Current Health: --", currentY)
-    currentY = currentY + 27
-    createHealthSlider(currentY)
-    currentY = currentY + 60
-    createModernButton("MANUAL TELEPORT", currentY, function() _G.manualHealthTeleport(healthStatus, healthValue) end, Colors.Primary)
-    currentY = currentY + 41
-    createModernToggle("AUTO HEALTH TELEPORT", currentY, function(state) _G.toggleHealthAuto(state, healthStatus, healthValue) end, false)
-    currentY = currentY + 46
+    -- E Spammer
+    createCategory("⌨️ E SPAMMER")
+    eSpammerStatus = createLabel("Status: Disabled")
+    createToggle("Enable E Spammer", function(state) _G.toggleESpammer(state, eSpammerStatus) end, false)
 
-    -- E Spammer Section
-    createModernSection("E SPAMMER", currentY)
-    currentY = currentY + 42
-    eSpammerStatus = createModernLabel("Status: Disabled", currentY)
-    currentY = currentY + 27
-    createModernToggle("ENABLE E SPAMMER", currentY, function(state) _G.toggleESpammer(state, eSpammerStatus) end, false)
-    currentY = currentY + 46
-
-    -- TPWalk Section
-    createModernSection("TPWALK MOVEMENT", currentY)
-    currentY = currentY + 42
-    tpwalkStatus = createModernLabel("Status: Disabled | Controls: WASD", currentY)
-    currentY = currentY + 27
-    createTPWalkSlider(currentY)
-    currentY = currentY + 60
-    createModernToggle("ENABLE TPWALK", currentY, function(state)
+    -- TPWalk
+    createCategory("🏃 TPWALK")
+    tpwalkStatus = createLabel("Status: Disabled | WASD")
+    createSlider("Speed", 10, 100, 50, function(val) _G.setTPWalkSpeed(val) end, " u")
+    createToggle("Enable TPWalk", function(state)
         _G.toggleTPWalk(state)
-        if state then
-            tpwalkStatus.Text = "Status: Enabled | Controls: WASD"
-        else
-            tpwalkStatus.Text = "Status: Disabled | Controls: WASD"
-        end
+        tpwalkStatus.Text = state and "Status: Enabled | WASD" or "Status: Disabled | WASD"
     end, false)
-    currentY = currentY + 46
 
-    -- Vehicle Teleport Section
-    createModernSection("VEHICLE TELEPORT CYCLE", currentY)
-    currentY = currentY + 42
-    vehicleStatus = createModernLabel("Status: Ready", currentY)
-    currentY = currentY + 27
-    createModernButton("START VEHICLE CYCLE", currentY, function() _G.startVehicleCycle(vehicleStatus) end, Color3.fromRGB(100, 140, 120))
-    currentY = currentY + 41
-    createModernButton("STOP VEHICLE CYCLE", currentY, function() _G.stopVehicleCycle() end, Colors.Error)
-    currentY = currentY + 46
+    -- Vehicle Cycle
+    createCategory("🚗 VEHICLE CYCLE")
+    vehicleStatus = createLabel("Status: Ready")
+    createButton("▶ START VEHICLE CYCLE", function() _G.startVehicleCycle(vehicleStatus) end, Color3.fromRGB(100, 180, 140))
+    createButton("⏹ STOP VEHICLE CYCLE", function() _G.stopVehicleCycle() end, Colors.Error)
 
-    -- ATM Teleport Section
-    createModernSection("ATM TELEPORT CYCLE", currentY)
-    currentY = currentY + 42
-    atmStatus = createModernLabel("Status: Ready | AutoClicker: ON", currentY)
-    currentY = currentY + 27
-
-    -- ATM Delay Slider
-    local atmDelaySlider = Instance.new("Frame")
-    atmDelaySlider.Size = UDim2.new(1, -20, 0, 50)
-    atmDelaySlider.Position = UDim2.new(0, 10, 0, currentY)
-    atmDelaySlider.BackgroundColor3 = Colors.SurfaceLight
-    atmDelaySlider.BorderSizePixel = 0
-    atmDelaySlider.Parent = ContentFrame
-
-    local atmDelayCorner = Instance.new("UICorner")
-    atmDelayCorner.CornerRadius = UDim.new(0, 8)
-    atmDelayCorner.Parent = atmDelaySlider
-
-    local atmDelayTitle = Instance.new("TextLabel")
-    atmDelayTitle.Size = UDim2.new(1, -20, 0, 20)
-    atmDelayTitle.Position = UDim2.new(0, 10, 0, 5)
-    atmDelayTitle.BackgroundTransparency = 1
-    atmDelayTitle.Text = "Delay between ATMs"
-    atmDelayTitle.TextColor3 = Colors.Text
-    atmDelayTitle.TextSize = 12
-    atmDelayTitle.Font = Enum.Font.GothamBold
-    atmDelayTitle.TextXAlignment = Enum.TextXAlignment.Left
-    atmDelayTitle.Parent = atmDelaySlider
-
-    local atmDelayValue = Instance.new("TextLabel")
-    atmDelayValue.Size = UDim2.new(0.4, 0, 0, 20)
-    atmDelayValue.Position = UDim2.new(0.6, 0, 0, 5)
-    atmDelayValue.BackgroundTransparency = 1
-    atmDelayValue.Text = atmTeleportDelay .. "s"
-    atmDelayValue.TextColor3 = Colors.AccentLight
-    atmDelayValue.TextSize = 11
-    atmDelayValue.Font = Enum.Font.GothamBold
-    atmDelayValue.TextXAlignment = Enum.TextXAlignment.Right
-    atmDelayValue.Parent = atmDelaySlider
-
-    local atmDelayTrack = Instance.new("Frame")
-    atmDelayTrack.Size = UDim2.new(1, -20, 0, 15)
-    atmDelayTrack.Position = UDim2.new(0, 10, 0, 30)
-    atmDelayTrack.BackgroundColor3 = Colors.DeepPurple
-    atmDelayTrack.BorderSizePixel = 0
-    atmDelayTrack.Parent = atmDelaySlider
-
-    local atmTrackCorner = Instance.new("UICorner")
-    atmTrackCorner.CornerRadius = UDim.new(0, 8)
-    atmTrackCorner.Parent = atmDelayTrack
-
-    local atmDelayFill = Instance.new("Frame")
-    atmDelayFill.Size = UDim2.new((atmTeleportDelay - 5) / 55, 0, 1, 0)
-    atmDelayFill.Position = UDim2.new(0, 0, 0, 0)
-    atmDelayFill.BackgroundColor3 = Colors.AccentLight
-    atmDelayFill.BorderSizePixel = 0
-    atmDelayFill.Parent = atmDelayTrack
-
-    local atmFillCorner = Instance.new("UICorner")
-    atmFillCorner.CornerRadius = UDim.new(0, 8)
-    atmFillCorner.Parent = atmDelayFill
-
-    local atmDelayThumb = Instance.new("Frame")
-    atmDelayThumb.Size = UDim2.new(0, 20, 0, 20)
-    atmDelayThumb.AnchorPoint = Vector2.new(0.5, 0.5)
-    atmDelayThumb.Position = UDim2.new((atmTeleportDelay - 5) / 55, 0, 0.5, 0)
-    atmDelayThumb.BackgroundColor3 = Colors.Text
-    atmDelayThumb.BorderSizePixel = 0
-    atmDelayThumb.ZIndex = 2
-    atmDelayThumb.Parent = atmDelayTrack
-
-    local atmThumbCorner = Instance.new("UICorner")
-    atmThumbCorner.CornerRadius = UDim.new(0, 10)
-    atmThumbCorner.Parent = atmDelayThumb
-
-    local atmIsDragging = false
-
-    local function updateATMValue(value)
-        local newDelay = math.clamp(math.floor(value), 5, 60)
-        atmTeleportDelay = newDelay
-        local fillAmount = (newDelay - 5) / 55
-        atmDelayFill.Size = UDim2.new(fillAmount, 0, 1, 0)
-        atmDelayThumb.Position = UDim2.new(fillAmount, 0, 0.5, 0)
-        atmDelayValue.Text = newDelay .. "s"
-        _G.setATMTeleportDelay(newDelay)
-    end
-
-    local function updateATMMouse()
-        if not atmIsDragging then return end
-        local mousePos = UserInputService:GetMouseLocation()
-        local trackAbsolutePos = atmDelayTrack.AbsolutePosition
-        local trackAbsoluteSize = atmDelayTrack.AbsoluteSize
-        local relativeX = (mousePos.X - trackAbsolutePos.X) / trackAbsoluteSize.X
-        relativeX = math.clamp(relativeX, 0, 1)
-        local newValue = math.floor(5 + relativeX * 55)
-        updateATMValue(newValue)
-    end
-
-    atmDelayTrack.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            atmIsDragging = true
-            updateATMMouse()
-        end
-    end)
-
-    atmDelayTrack.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            atmIsDragging = false
-        end
-    end)
-
-    atmDelayThumb.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            atmIsDragging = true
-        end
-    end)
-
-    atmDelayThumb.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            atmIsDragging = false
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if atmIsDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            updateATMMouse()
-        end
-    end)
-
-    currentY = currentY + 60
-
-    createModernToggle("AUTO-CLICKER (E)", currentY, function(state)
+    -- ATM Cycle
+    createCategory("🏧 ATM CYCLE")
+    atmStatus = createLabel("Status: Ready | AutoClicker: ON")
+    createSlider("Delay", 5, 60, 10, function(val) _G.setATMTeleportDelay(val) end, "s")
+    createToggle("Auto-Clicker (E)", function(state)
         _G.toggleATMAutoClicker(state)
-        if state then
-            atmStatus.Text = "Status: Ready | AutoClicker: ON"
-        else
-            atmStatus.Text = "Status: Ready | AutoClicker: OFF"
-        end
+        atmStatus.Text = state and "Status: Ready | AutoClicker: ON" or "Status: Ready | AutoClicker: OFF"
     end, true)
-    currentY = currentY + 46
+    createButton("▶ START ATM CYCLE", function() _G.startATMCycle() end, Color3.fromRGB(100, 140, 200))
+    createButton("⏹ STOP ATM CYCLE", function() _G.stopATMCycle() end, Colors.Error)
 
-    createModernButton("START ATM CYCLE", currentY, function() _G.startATMCycle() end, Color3.fromRGB(100, 120, 170))
-    currentY = currentY + 41
-    createModernButton("STOP ATM CYCLE", currentY, function() _G.stopATMCycle() end, Colors.Error)
-    currentY = currentY + 46
-
-    -- Advanced Teleport
-    createModernSection("TELEPORT AND INVISIBLITY", currentY)
-    currentY = currentY + 42
-    advancedStatus = createModernLabel("Select destination below", currentY)
-    currentY = currentY + 27
-
-    local teleportButtons = {
-        {"SAFEZONE", Colors.Primary, function() 
-            local char = game.Players.LocalPlayer.Character
-            if char and char:FindFirstChild("HumanoidRootPart") then
-                char.HumanoidRootPart.CFrame = CFrame.new(949, 373, 463)
-            end
-        end},
-        {"ARMORY", Color3.fromRGB(160, 120, 60), function() _G.teleportToArmory(advancedStatus) end},
-        {"JEWELRY", Color3.fromRGB(130, 70, 160), function() _G.teleportToJewelry(advancedStatus) end},
-        {"MILITARY", Colors.Success, function() _G.teleportToMilitary(advancedStatus) end},
-        {"BLACK MARKET", Colors.Error, function() _G.teleportToBlackMarket(advancedStatus) end},
-        {"BANK NODE", Color3.fromRGB(90, 140, 150), function() _G.teleportToBankNode(advancedStatus) end},
-        {"POLICE STATION", Color3.fromRGB(70, 110, 170), function() _G.teleportToPoliceStation(advancedStatus) end},
-        {"INVISIBLITY", Color3.fromRGB(150, 80, 140), function() 
-            advancedStatus.Text = "Loading external script..."
-            local success, result = pcall(function()
-                loadstring(game:HttpGet('https://gist.githubusercontent.com/iltmita/d9097875cac658cf9fef6cd4615cacd2/raw'))()
-            end)
-            if success then
-                advancedStatus.Text = "External script loaded successfully!"
-            else
-                advancedStatus.Text = "Failed to load: " .. tostring(result)
-            end
-        end}
-    }
-
-    for i, btnData in ipairs(teleportButtons) do
-        local col = (i-1) % 2
-        local row = math.floor((i-1) / 2)
-        local button = Instance.new("TextButton")
-        button.Size = UDim2.new(0.48, 0, 0, 32)
-        button.Position = UDim2.new(0.02 + col * 0.5, 0, 0, currentY + row * 37)
-        button.BackgroundColor3 = btnData[2]
-        button.Text = btnData[1]
-        button.TextColor3 = Colors.Text
-        button.TextSize = 11
-        button.Font = Enum.Font.GothamBold
-        button.Parent = ContentFrame
-        
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 6)
-        corner.Parent = button
-        
-        local function createButtonEffect(btn)
-            local originalColor = btn.BackgroundColor3
-            btn.MouseEnter:Connect(function()
-                TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                    BackgroundColor3 = Color3.fromRGB(
-                        math.min(originalColor.R * 255 + 20, 255),
-                        math.min(originalColor.G * 255 + 20, 255),
-                        math.min(originalColor.B * 255 + 20, 255)
-                    ) / 255
-                }):Play()
-            end)
-            btn.MouseLeave:Connect(function()
-                TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                    BackgroundColor3 = originalColor
-                }):Play()
-            end)
+    -- Advanced Teleports
+    createCategory("📍 ADVANCED TP")
+    advancedStatus = createLabel("Select destination")
+    createButton("🏛 SAFEZONE", function()
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.CFrame = CFrame.new(949, 373, 463)
+            advancedStatus.Text = "Teleported to SafeZone!"
         end
-        createButtonEffect(button)
-        button.MouseButton1Click:Connect(btnData[3])
-        
-        if i == #teleportButtons then
-            currentY = currentY + (row + 1) * 37 + 10
-        end
-    end
+    end, Colors.Primary)
+    createButton("🔫 ARMORY", function() _G.teleportToArmory(advancedStatus) end, Color3.fromRGB(200, 160, 80))
+    createButton("💎 JEWELRY", function() _G.teleportToJewelry(advancedStatus) end, Color3.fromRGB(180, 100, 200))
+    createButton("🎖 MILITARY", function() _G.teleportToMilitary(advancedStatus) end, Colors.Success)
+    createButton("⚫ BLACK MARKET", function() _G.teleportToBlackMarket(advancedStatus) end, Colors.Error)
+    createButton("🏦 BANK NODE", function() _G.teleportToBankNode(advancedStatus) end, Color3.fromRGB(100, 180, 200))
+    createButton("👮 POLICE", function() _G.teleportToPoliceStation(advancedStatus) end, Color3.fromRGB(80, 140, 220))
+    createButton("👻 INVISIBILITY", function()
+        advancedStatus.Text = "Loading..."
+        pcall(function() loadstring(game:HttpGet('https://gist.githubusercontent.com/iltmita/d9097875cac658cf9fef6cd4615cacd2/raw'))() end)
+        advancedStatus.Text = "Loaded!"
+    end, Color3.fromRGB(180, 100, 180))
 
     -- Component Box
-    createModernSection("COMPONENT BOX TELEPORTER", currentY)
-    currentY = currentY + 42
-    componentStatus = createModernLabel("Status: Ready", currentY)
-    currentY = currentY + 27
-    createModernButton("OPEN COMPONENT BOX GUI", currentY, function() createComponentBoxGUI() end, Colors.Component)
-    currentY = currentY + 46
+    createCategory("📦 COMPONENT BOX")
+    componentStatus = createLabel("Status: Ready")
+    createButton("🔧 OPEN COMPONENT GUI", function() createComponentBoxGUI() end, Colors.Component)
 
     -- Premium
-    createModernSection("PREMIUM (Free)", currentY)
-    currentY = currentY + 42
-    premiumStatus = createModernLabel("Status: Check premium access", currentY)
-    currentY = currentY + 27
-    createModernButton("PREMIUM UI (free)", currentY, function()
-        premiumStatus.Text = "Loading premium..."
-        premiumStatus.TextColor3 = Colors.Warning
-        local success, result = pcall(function()
-            loadstring(game:HttpGet('https://gist.githubusercontent.com/iltmita/45481282af67a27734ca6d53c72b4bac/raw'))()
-        end)
-        if success then
-            premiumStatus.Text = "Premium loaded!"
-            premiumStatus.TextColor3 = Colors.Success
-        else
-            premiumStatus.Text = "Error: " .. tostring(result)
-            premiumStatus.TextColor3 = Colors.Error
-        end
+    createCategory("⭐ PREMIUM (Free)")
+    premiumStatus = createLabel("Status: Ready")
+    createButton("🚀 LOAD PREMIUM", function()
+        premiumStatus.Text = "Loading..."
+        pcall(function() loadstring(game:HttpGet('https://gist.githubusercontent.com/iltmita/45481282af67a27734ca6d53c72b4bac/raw'))() end)
+        premiumStatus.Text = "Loaded!"
     end, Colors.Premium)
-    currentY = currentY + 46
 
     -- Discord
-    createModernSection("COMMUNITY", currentY)
-    currentY = currentY + 42
-    createModernButton("OUR DISCORD", currentY, function()
+    createCategory("💬 COMMUNITY")
+    createButton("📋 COPY DISCORD", function()
         pcall(function() setclipboard("https://discord.gg/JAWwytSaBZ") end)
-        local notification = Instance.new("ScreenGui")
-        notification.Name = "DiscordNotification"
-        notification.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-        notification.Parent = game.CoreGui
-        
-        local notificationFrame = Instance.new("Frame")
-        notificationFrame.Size = UDim2.new(0, 300, 0, 80)
-        notificationFrame.Position = UDim2.new(0.5, -150, 0, 50)
-        notificationFrame.BackgroundColor3 = Colors.Surface
-        notificationFrame.BackgroundTransparency = 0.1
-        notificationFrame.BorderSizePixel = 0
-        notificationFrame.Parent = notification
-        
-        local notificationCorner = Instance.new("UICorner")
-        notificationCorner.CornerRadius = UDim.new(0, 15)
-        notificationCorner.Parent = notificationFrame
-        
-        local notificationShadow = Instance.new("ImageLabel")
-        notificationShadow.Image = "rbxassetid://6010261993"
-        notificationShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-        notificationShadow.ImageTransparency = 0.7
-        notificationShadow.ScaleType = Enum.ScaleType.Slice
-        notificationShadow.SliceCenter = Rect.new(49, 49, 450, 450)
-        notificationShadow.Size = UDim2.new(1, 20, 1, 20)
-        notificationShadow.Position = UDim2.new(0, -10, 0, -10)
-        notificationShadow.BackgroundTransparency = 1
-        notificationShadow.Parent = notificationFrame
-        
-        local iconLabel = Instance.new("TextLabel")
-        iconLabel.Size = UDim2.new(0, 50, 1, 0)
-        iconLabel.Position = UDim2.new(0, 0, 0, 0)
-        iconLabel.BackgroundTransparency = 1
-        iconLabel.Text = "COPY"
-        iconLabel.TextColor3 = Colors.Success
-        iconLabel.TextSize = 24
-        iconLabel.Font = Enum.Font.GothamBold
-        iconLabel.Parent = notificationFrame
-        
-        local titleLabel = Instance.new("TextLabel")
-        titleLabel.Size = UDim2.new(1, -60, 0, 30)
-        titleLabel.Position = UDim2.new(0, 50, 0, 15)
-        titleLabel.BackgroundTransparency = 1
-        titleLabel.Text = "Discord Link Copied!"
-        titleLabel.TextColor3 = Colors.Text
-        titleLabel.TextSize = 18
-        titleLabel.Font = Enum.Font.GothamBold
-        titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-        titleLabel.Parent = notificationFrame
-        
-        local messageLabel = Instance.new("TextLabel")
-        messageLabel.Size = UDim2.new(1, -60, 0, 25)
-        messageLabel.Position = UDim2.new(0, 50, 0, 45)
-        messageLabel.BackgroundTransparency = 1
-        messageLabel.Text = "Paste it in your browser to join"
-        messageLabel.TextColor3 = Colors.TextSecondary
-        messageLabel.TextSize = 12
-        messageLabel.Font = Enum.Font.Gotham
-        messageLabel.TextXAlignment = Enum.TextXAlignment.Left
-        messageLabel.Parent = notificationFrame
-        
-        notificationFrame.Position = UDim2.new(0.5, -150, 0, -100)
-        TweenService:Create(notificationFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Position = UDim2.new(0.5, -150, 0, 50)
-        }):Play()
-        
-        task.wait(3)
-        TweenService:Create(notificationFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Position = UDim2.new(0.5, -150, 0, -100),
-            BackgroundTransparency = 1
-        }):Play()
-        
+        local notif = Instance.new("ScreenGui")
+        notif.Name = "DiscordNotif"
+        notif.Parent = CoreGui
+        local f = Instance.new("Frame")
+        f.Size = UDim2.new(0, 280, 0, 60)
+        f.Position = UDim2.new(0.5, -140, 0, 60)
+        f.BackgroundColor3 = Colors.Surface
+        f.BackgroundTransparency = 0.1
+        f.BorderSizePixel = 0
+        f.Parent = notif
+        local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0, 12); c.Parent = f
+        local l = Instance.new("TextLabel")
+        l.Size = UDim2.new(1, 0, 1, 0)
+        l.BackgroundTransparency = 1
+        l.Text = "✅ Discord link copied!"
+        l.TextColor3 = Colors.Success
+        l.TextSize = 14
+        l.Font = Enum.Font.GothamBold
+        l.Parent = f
+        f.Position = UDim2.new(0.5, -140, 0, -80)
+        TweenService:Create(f, TweenInfo.new(0.3, Enum.EasingStyle.Back), {Position = UDim2.new(0.5, -140, 0, 60)}):Play()
+        task.wait(2.5)
+        TweenService:Create(f, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -140, 0, -80), BackgroundTransparency = 1}):Play()
         task.wait(0.3)
-        notification:Destroy()
+        notif:Destroy()
     end, Colors.Primary)
-    currentY = currentY + 46
-
-    ContentFrame.CanvasSize = UDim2.new(0, 0, 0, currentY + 10)
 
     -- ============================================
-    -- MINIMIZE / CLOSE FUNCTIONALITY
+    -- MINIMIZE / CLOSE FUNCIONALIDAD
     -- ============================================
     local isMinimized = false
     local originalSize = MainContainer.Size
 
-    CornerMinimizeButton.MouseButton1Click:Connect(function()
+    MinimizeButton.MouseButton1Click:Connect(function()
         isMinimized = not isMinimized
         if isMinimized then
-            TweenService:Create(MainContainer, TweenInfo.new(0.3), {
-                Size = UDim2.new(0, 380, 0, 70)
-            }):Play()
-            ContentFrame.Visible = false
-            CornerMinimizeButton.Text = "+"
+            TweenService:Create(MainContainer, TweenInfo.new(0.3), {Size = UDim2.new(0, 340, 0, 50)}):Play()
+            ScrollFrame.Visible = false
+            MinimizeButton.Text = "+"
         else
-            TweenService:Create(MainContainer, TweenInfo.new(0.3), {
-                Size = originalSize
-            }):Play()
-            ContentFrame.Visible = true
-            CornerMinimizeButton.Text = "−"
+            TweenService:Create(MainContainer, TweenInfo.new(0.3), {Size = originalSize}):Play()
+            ScrollFrame.Visible = true
+            MinimizeButton.Text = "−"
         end
     end)
 
-    CornerCloseButton.MouseButton1Click:Connect(function()
+    -- Cerrar solo este GUI (el botón de cerrar todos está arriba)
+    local CloseThisButton = Instance.new("TextButton")
+    CloseThisButton.Size = UDim2.new(0, 28, 0, 28)
+    CloseThisButton.Position = UDim2.new(1, -72, 0, 10)
+    CloseThisButton.BackgroundColor3 = Colors.Error
+    CloseThisButton.Text = "✕"
+    CloseThisButton.TextColor3 = Colors.Text
+    CloseThisButton.TextSize = 14
+    CloseThisButton.Font = Enum.Font.GothamBold
+    CloseThisButton.Parent = Header
+    local CloseCorner = Instance.new("UICorner"); CloseCorner.CornerRadius = UDim.new(0, 6); CloseCorner.Parent = CloseThisButton
+    
+    CloseThisButton.MouseButton1Click:Connect(function()
         TweenService:Create(MainContainer, TweenInfo.new(0.3), {
             Size = UDim2.new(0, 0, 0, 0),
-            Position = UDim2.new(0, MainContainer.AbsolutePosition.X + 190, 0, MainContainer.AbsolutePosition.Y + 250)
+            Position = UDim2.new(0.5, -170, 0.5, -250)
         }):Play()
         task.wait(0.3)
         MainGui:Destroy()
     end)
 
-    -- Prompt hold duration fix
-    for _, v in ipairs(workspace:GetDescendants()) do 
-        if v:IsA("ProximityPrompt") then 
-            v.HoldDuration = 0 
-        end 
+    -- Fix ProximityPrompts
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") then v.HoldDuration = 0 end
     end
-    
     workspace.DescendantAdded:Connect(function(v)
-        if v:IsA("ProximityPrompt") then 
-            v.HoldDuration = 0 
-        end 
+        if v:IsA("ProximityPrompt") then v.HoldDuration = 0 end
     end)
 
-    print("Modern Script Pack loaded successfully!")
+    print("PugModsV1 loaded successfully!")
     print("Owner: " .. SCRIPT_OWNER)
 end
 
 -- ============================================
--- EXECUTION
+-- EXECUCIÓN
 -- ============================================
 teleportGunLocker()
 teleportWorkbench()
 createSafezonePlatform()
 createMainGUI()
-print("Hi")
+print("PugModsV1 - Ready")
